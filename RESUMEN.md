@@ -50,7 +50,7 @@ napanchita/
 
 ---
 
-## 🎯 Características Implementadas
+## 🎯 Características Implementadas en el Proyecto
 
 ### ✅ Arquitectura MVC
 - Separación clara: Modelos, Vistas, Controladores
