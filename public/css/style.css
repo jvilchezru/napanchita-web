@@ -1,0 +1,375 @@
+/* ========================================
+   ESTILOS PERSONALIZADOS NAPANCHITA
+   ======================================== */
+
+/* Variables CSS */
+:root {
+    --color-primary: #667eea;
+    --color-secondary: #764ba2;
+    --color-success: #28a745;
+    --color-danger: #dc3545;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+    --transition: all 0.3s ease;
+}
+
+/* Estilos Generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.5s ease-in-out;
+}
+
+/* Cards Mejoradas */
+.card {
+    transition: var(--transition);
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    border-bottom: none;
+}
+
+/* Botones Mejorados */
+.btn {
+    transition: var(--transition);
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+}
+
+/* Mesas (para dashboard de meseros) */
+.mesa-card {
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.mesa-card:hover {
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+}
+
+.mesa-card .card-body {
+    padding: 20px;
+}
+
+.mesa-card.ocupada {
+    background-color: #ffebee;
+    border-color: var(--color-danger);
+}
+
+.mesa-card.reservada {
+    background-color: #fff8e1;
+    border-color: var(--color-warning);
+}
+
+.mesa-card.disponible {
+    background-color: #e8f5e9;
+    border-color: var(--color-success);
+}
+
+/* DataTables Personalizadas */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 5px;
+    margin: 0 3px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border-color: var(--color-primary);
+}
+
+/* Badges Personalizados */
+.badge {
+    padding: 6px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* Estado de pedidos */
+.badge-pendiente {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.badge-preparacion {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.badge-listo {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.badge-entregado {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.badge-cancelado {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Estado de deliveries */
+.badge-asignado {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.badge-en-camino {
+    background-color: #fd7e14;
+    color: #fff;
+}
+
+.badge-completado {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Alertas Personalizadas */
+.alert {
+    border-left: 4px solid;
+    border-radius: 8px;
+}
+
+.alert-success {
+    border-left-color: var(--color-success);
+    background-color: #d4edda;
+}
+
+.alert-danger {
+    border-left-color: var(--color-danger);
+    background-color: #f8d7da;
+}
+
+.alert-warning {
+    border-left-color: var(--color-warning);
+    background-color: #fff3cd;
+}
+
+.alert-info {
+    border-left-color: var(--color-info);
+    background-color: #d1ecf1;
+}
+
+/* Formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+/* Tablas */
+.table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5568d3 0%, #653a8b 100%);
+}
+
+/* Loading Spinner */
+.spinner-border-custom {
+    width: 3rem;
+    height: 3rem;
+    border: 0.4em solid rgba(102, 126, 234, 0.2);
+    border-right-color: var(--color-primary);
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+}
+
+.dropdown-item {
+    transition: var(--transition);
+    padding: 10px 20px;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: var(--color-primary);
+    padding-left: 25px;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    font-size: 1.2rem;
+}
+
+.breadcrumb-item a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Print Styles */
+@media print {
+    .sidebar,
+    .top-header,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stat-card h3 {
+        font-size: 24px;
+    }
+    
+    .stat-card i {
+        font-size: 30px;
+    }
+    
+    .page-header h1 {
+        font-size: 22px;
+    }
+    
+    .card-header {
+        font-size: 14px;
+    }
+}
+
+/* Utilidades Adicionales */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-custom {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.border-gradient {
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), 
+                      linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}

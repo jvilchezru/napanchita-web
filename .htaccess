@@ -1,0 +1,21 @@
+# Habilitar RewriteEngine
+RewriteEngine On
+
+# Si el archivo o directorio existe, mostrarlo directamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirigir todo a index.php con el parámetro action
+RewriteRule ^(.*)$ index.php?action=$1 [QSA,L]
+
+# Página por defecto
+DirectoryIndex index.php
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Proteger archivos de configuración
+<FilesMatch "^(config|\.env|\.git)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
