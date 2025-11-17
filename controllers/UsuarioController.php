@@ -63,7 +63,7 @@ class UsuarioController
         $nombre = sanitize_input($_POST['nombre'] ?? '');
         $email = sanitize_input($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $password_confirmar = $_POST['password_confirmar'] ?? '';
+        $password_confirm = $_POST['password_confirm'] ?? '';
         $telefono = sanitize_input($_POST['telefono'] ?? '');
         $rol = $_POST['rol'] ?? ROL_MESERO;
 
@@ -71,7 +71,7 @@ class UsuarioController
         if (empty($nombre) || empty($email) || empty($password) || empty($telefono)) {
             $_SESSION['error'] = 'Por favor complete todos los campos obligatorios';
             $_SESSION['form_data'] = $_POST;
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
@@ -79,7 +79,7 @@ class UsuarioController
         if (!validate_email($email)) {
             $_SESSION['error'] = 'El email no es válido';
             $_SESSION['form_data'] = $_POST;
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
@@ -87,22 +87,22 @@ class UsuarioController
         if ($this->usuario->emailExiste($email)) {
             $_SESSION['error'] = 'El email ya está registrado';
             $_SESSION['form_data'] = $_POST;
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
         // Validar contraseñas
-        if ($password !== $password_confirmar) {
+        if ($password !== $password_confirm) {
             $_SESSION['error'] = 'Las contraseñas no coinciden';
             $_SESSION['form_data'] = $_POST;
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
         if (strlen($password) < 6) {
             $_SESSION['error'] = 'La contraseña debe tener al menos 6 caracteres';
             $_SESSION['form_data'] = $_POST;
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
@@ -110,7 +110,7 @@ class UsuarioController
         $roles_validos = [ROL_ADMIN, ROL_MESERO, ROL_REPARTIDOR];
         if (!in_array($rol, $roles_validos)) {
             $_SESSION['error'] = 'Rol no válido';
-            redirect('usuarios/crear');
+            redirect('usuarios_crear');
             return;
         }
 
@@ -171,12 +171,29 @@ class UsuarioController
         $telefono = sanitize_input($_POST['telefono'] ?? '');
         $rol = $_POST['rol'] ?? ROL_MESERO;
         $activo = isset($_POST['activo']) ? 1 : 0;
+        $password = $_POST['password'] ?? '';
+        $password_confirm = $_POST['password_confirm'] ?? '';
 
         // Validar campos requeridos
         if (empty($nombre) || empty($email) || empty($telefono)) {
             $_SESSION['error'] = 'Por favor complete todos los campos obligatorios';
             redirect('usuarios_editar&id=' . $id);
             return;
+        }
+
+        // Validar contraseña si se proporcionó
+        if (!empty($password)) {
+            if (strlen($password) < 6) {
+                $_SESSION['error'] = 'La contraseña debe tener al menos 6 caracteres';
+                redirect('usuarios_editar&id=' . $id);
+                return;
+            }
+
+            if ($password !== $password_confirm) {
+                $_SESSION['error'] = 'Las contraseñas no coinciden';
+                redirect('usuarios_editar&id=' . $id);
+                return;
+            }
         }
 
         // Validar email
@@ -207,15 +224,22 @@ class UsuarioController
         $this->usuario->rol = $rol;
         $this->usuario->activo = $activo;
 
-        // Debug temporal
-        error_log("Actualizando usuario ID: $id, Nombre: $nombre, Email: $email, Activo: $activo");
-
         $resultado = $this->usuario->actualizar();
-        error_log("Resultado actualización: " . ($resultado ? 'true' : 'false'));
+
+        // Si se proporcionó una nueva contraseña, actualizarla
+        if ($resultado && !empty($password)) {
+            $resultado = $this->usuario->cambiarPassword($password);
+            if (!$resultado) {
+                $_SESSION['error'] = 'Usuario actualizado pero error al cambiar la contraseña';
+                redirect('usuarios_editar&id=' . $id);
+                return;
+            }
+        }
 
         if ($resultado) {
+            $mensaje = !empty($password) ? "Usuario y contraseña actualizados" : "Usuario actualizado";
             log_actividad($this->db, $_SESSION['usuario_id'], 'ACTUALIZAR_USUARIO', 'usuarios', $id, "Usuario: $nombre");
-            $_SESSION['success'] = 'Usuario actualizado correctamente';
+            $_SESSION['success'] = $mensaje . ' correctamente';
             redirect('usuarios');
         } else {
             $_SESSION['error'] = 'Error al actualizar el usuario';
@@ -267,6 +291,12 @@ class UsuarioController
     public function eliminar($id)
     {
         AuthController::verificarAdmin();
+
+        // Verificar que sea petición POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            json_response(['success' => false, 'message' => 'Método no permitido'], 405);
+            return;
+        }
 
         // No permitir eliminar el propio usuario
         if ($id == $_SESSION['usuario_id']) {

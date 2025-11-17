@@ -128,7 +128,7 @@ class Usuario
     }
 
     /**
-     * Listar todos los usuarios activos
+     * Listar todos los usuarios
      * @return PDOStatement
      */
     public function listar()
@@ -248,12 +248,21 @@ class Usuario
     }
 
     /**
-     * Eliminar usuario (soft delete - cambiar a inactivo)
+     * Eliminar usuario (DELETE real)
      * @return boolean True si se eliminó correctamente
      */
     public function eliminar()
     {
-        return $this->cambiarEstado($this->id, false);
+        $query = "DELETE FROM " . $this->table . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+
+        try {
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al eliminar usuario: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**

@@ -138,11 +138,13 @@ include __DIR__ . '/../layouts/header.php';
                                                 <i class="fas fa-<?php echo $usuario['activo'] ? 'ban' : 'check'; ?>"></i>
                                             </button>
 
-                                            <a href="<?php echo BASE_URL; ?>index.php?action=usuarios_eliminar&id=<?php echo $usuario['id']; ?>"
-                                                class="btn btn-sm btn-danger btn-delete"
+                                            <button type="button"
+                                                class="btn btn-sm btn-danger btn-eliminar"
+                                                data-id="<?php echo $usuario['id']; ?>"
+                                                data-nombre="<?php echo htmlspecialchars($usuario['nombre']); ?>"
                                                 title="Eliminar">
                                                 <i class="fas fa-trash"></i>
-                                            </a>
+                                            </button>
                                         <?php else: ?>
                                             <button type="button" class="btn btn-sm btn-secondary" disabled title="No puedes modificar tu propio usuario">
                                                 <i class="fas fa-lock"></i>
@@ -282,6 +284,59 @@ $extraScripts = '
                                 icon: "error",
                                 title: "Error",
                                 text: "Error al cambiar el estado del usuario"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Eliminar usuario
+        $(".btn-eliminar").on("click", function() {
+            const btn = $(this);
+            const id = btn.data("id");
+            const nombre = btn.data("nombre");
+            
+            Swal.fire({
+                title: "¿Está seguro?",
+                html: `Se eliminará el usuario <strong>${nombre}</strong><br><small>Esta acción no se puede deshacer</small>`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Hacer petición AJAX
+                    $.ajax({
+                        url: "index.php?action=usuarios_eliminar&id=" + id,
+                        type: "POST",
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "¡Eliminado!",
+                                    text: response.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Error al eliminar el usuario"
                             });
                         }
                     });
