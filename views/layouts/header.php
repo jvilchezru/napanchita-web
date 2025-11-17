@@ -23,13 +23,14 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/tema-celeste.css">
 
     <style>
         :root {
             --sidebar-width: 260px;
             --header-height: 60px;
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
+            --primary-color: #17a2b8;
+            --secondary-color: #00bcd4;
         }
 
         body {
@@ -45,13 +46,30 @@
         /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #17a2b8 0%, #00bcd4 100%);
             color: white;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             transition: all 0.3s;
             z-index: 1000;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
         }
 
         .sidebar-header {
@@ -125,7 +143,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -176,7 +194,7 @@
         }
 
         .stat-card.blue {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
         }
 
         .stat-card.green {

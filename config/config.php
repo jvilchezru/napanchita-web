@@ -23,7 +23,7 @@ if (ENVIRONMENT === 'development') {
 }
 
 // Configuración de la aplicación
-define('APP_NAME', 'Sistema Napanchita');
+define('APP_NAME', 'Cevichería Ñapanchita');
 define('APP_VERSION', '1.0.0');
 define('BASE_URL', 'http://localhost/napanchita-web/');
 

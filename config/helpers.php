@@ -57,12 +57,20 @@ function get_session_user()
 
 /**
  * Verificar si el usuario tiene un rol específico
- * @param string $rol Rol a verificar
+ * @param string|array $rol Rol o array de roles a verificar
  * @return boolean
  */
 function has_role($rol)
 {
-    return is_logged_in() && $_SESSION['usuario_rol'] === $rol;
+    if (!is_logged_in()) {
+        return false;
+    }
+
+    if (is_array($rol)) {
+        return in_array($_SESSION['usuario_rol'], $rol);
+    }
+
+    return $_SESSION['usuario_rol'] === $rol;
 }
 
 /**
@@ -267,4 +275,65 @@ function upload_file($file, $destination, $allowed_types = ['image/jpeg', 'image
     }
 
     return false;
+}
+
+/**
+ * Verificar sesión activa y redirigir si no hay sesión
+ */
+function verificar_sesion()
+{
+    if (!is_logged_in()) {
+        set_flash_message('Debes iniciar sesión para acceder', 'error');
+        redirect('login');
+        exit();
+    }
+}
+
+/**
+ * Verificar rol de usuario
+ * @param string $rol Rol requerido
+ * @return boolean
+ */
+function verificar_rol($rol)
+{
+    if (!is_logged_in()) {
+        return false;
+    }
+    return $_SESSION['usuario_rol'] === $rol;
+}
+
+/**
+ * Establecer mensaje flash
+ * @param string $message Mensaje
+ * @param string $type Tipo (success, error, warning, info)
+ */
+function set_flash_message($message, $type = 'info')
+{
+    $_SESSION['flash_message'] = [
+        'message' => $message,
+        'type' => $type
+    ];
+}
+
+/**
+ * Verificar si hay mensaje flash
+ * @return boolean
+ */
+function has_flash_message()
+{
+    return isset($_SESSION['flash_message']);
+}
+
+/**
+ * Obtener mensaje flash y eliminarlo
+ * @return array|null
+ */
+function get_flash_message()
+{
+    if (has_flash_message()) {
+        $flash = $_SESSION['flash_message'];
+        unset($_SESSION['flash_message']);
+        return $flash;
+    }
+    return null;
 }

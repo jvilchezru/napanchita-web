@@ -1,0 +1,167 @@
+/* 
+ * Sistema Napanchita - Tema Celeste
+ * Colores principales personalizados
+ */
+
+:root {
+    --primary-color: #17a2b8;
+    --primary-dark: #138496;
+    --primary-light: #00bcd4;
+    --primary-gradient: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+}
+
+/* Sobrescribir colores primarios de Bootstrap */
+.btn-primary {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+    border-color: #17a2b8;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #138496 0%, #00acc1 100%);
+    border-color: #138496;
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+    background: linear-gradient(135deg, #138496 0%, #00acc1 100%);
+    border-color: #138496;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.5);
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%) !important;
+}
+
+.text-primary {
+    color: #17a2b8 !important;
+}
+
+.border-primary {
+    border-color: #17a2b8 !important;
+}
+
+/* Links */
+a {
+    color: #17a2b8;
+}
+
+a:hover {
+    color: #138496;
+}
+
+/* Badges */
+.badge.bg-primary {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%) !important;
+}
+
+/* Alerts */
+.alert-primary {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+/* Pagination */
+.page-link {
+    color: #17a2b8;
+}
+
+.page-link:hover {
+    color: #138496;
+}
+
+.page-item.active .page-link {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: #17a2b8;
+}
+
+/* Spinners */
+.spinner-border {
+    color: #17a2b8;
+}
+
+/* Cards con gradiente celeste */
+.card-header-celeste {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+    color: white;
+}
+
+/* Botones adicionales con estilo celeste */
+.btn-celeste {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-celeste:hover {
+    background: linear-gradient(135deg, #138496 0%, #00acc1 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+    color: white;
+}
+
+/* Header sections con gradiente celeste */
+.header-gradient-celeste {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+    color: white;
+}
+
+/* Tablas DataTables */
+table.dataTable thead th {
+    border-bottom: 2px solid #17a2b8;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+    border-color: #17a2b8;
+}
+
+/* SweetAlert2 */
+.swal2-confirm {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%) !important;
+}
+
+/* Sidebar y navegación */
+.nav-link.active {
+    background-color: #17a2b8;
+    color: white !important;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
+}
+
+/* Tabs */
+.nav-tabs .nav-link.active {
+    color: #17a2b8;
+    border-bottom-color: #17a2b8;
+}
+
+/* Dropdown */
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #17a2b8;
+}
+
+/* List group */
+.list-group-item.active {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}

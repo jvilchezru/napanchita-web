@@ -15,7 +15,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
             min-height: 100vh;
             color: white;
         }
@@ -65,7 +65,7 @@
             font-weight: 600;
             border-radius: 50px;
             background: white;
-            color: #667eea;
+            color: #17a2b8;
             border: none;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
@@ -74,7 +74,7 @@
         .btn-access:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            color: #764ba2;
+            color: #00bcd4;
         }
 
         .footer {
@@ -91,8 +91,8 @@
         <!-- Hero Section -->
         <div class="hero-section">
             <i class="fas fa-utensils fa-5x mb-4"></i>
-            <h1>Sistema Napanchita</h1>
-            <p>Gestión Integral para Cevicherías</p>
+            <h1>Cevichería Ñapanchita</h1>
+
             <a href="<?php echo BASE_URL; ?>index.php?action=login" class="btn btn-access">
                 <i class="fas fa-sign-in-alt me-2"></i> Acceder al Sistema
             </a>
@@ -177,7 +177,7 @@
         <!-- Footer -->
         <div class="footer">
             <p class="mb-2">
-                <strong>Sistema Napanchita v<?php echo APP_VERSION; ?></strong>
+                <strong>Cevichería Ñapanchita v<?php echo APP_VERSION; ?></strong>
             </p>
             <p class="mb-0">
                 <small>

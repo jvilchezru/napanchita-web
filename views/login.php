@@ -14,7 +14,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -34,7 +34,7 @@
         }
 
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -55,12 +55,12 @@
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #17a2b8;
+            box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
         }
 
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
             border: none;
             padding: 12px;
             font-size: 16px;
@@ -70,7 +70,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
         }
 
         .input-group-text {
@@ -92,9 +92,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-utensils"></i>
-                <h2>Sistema Napanchita</h2>
-                <p class="mb-0">Gestión Integral para Cevichería</p>
+                <img src="<?php echo BASE_URL; ?>public/images/logo.png" alt="Logo Cevichería Ñapanchita" style="max-width: 400px; margin-bottom: 15px;">
             </div>
 
             <div class="login-body">
@@ -169,18 +167,13 @@
                     </button>
                 </form>
 
-                <div class="mt-4 text-center">
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Para pruebas use: <strong>admin@napanchita.com</strong> / <strong>password123</strong>
-                    </small>
-                </div>
+
             </div>
         </div>
 
         <div class="text-center mt-4">
             <small class="text-white">
-                © <?php echo date('Y'); ?> Sistema Napanchita v<?php echo APP_VERSION; ?> - Todos los derechos reservados
+                © <?php echo date('Y'); ?> Cevichería Ñapanchita v<?php echo APP_VERSION; ?> - Todos los derechos reservados
             </small>
         </div>
     </div>

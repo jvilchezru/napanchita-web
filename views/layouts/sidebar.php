@@ -1,8 +1,6 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <i class="fas fa-utensils fa-2x mb-2"></i>
-        <h3>Napanchita</h3>
-        <small>Sistema de Gestión</small>
+        <img src="<?php echo BASE_URL; ?>public/images/logo.png" alt="Logo Cevichería Ñapanchita" style="max-width: 200px; margin-bottom: 15px;">
     </div>
 
     <ul class="sidebar-menu">

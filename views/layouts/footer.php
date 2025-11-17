@@ -1,11 +1,11 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white border-top py-3 px-4 text-center">
+            <footer class="bg-white border-top py-3 px-4 text-center mt-auto">
                 <small class="text-muted">
                     © <?php echo date('Y'); ?> <?php echo APP_NAME; ?> v<?php echo APP_VERSION; ?> - Todos los derechos reservados
-                    | <a href="#" class="text-decoration-none">Soporte</a>
-                    | <a href="#" class="text-decoration-none">Documentación</a>
+                    <!-- | <a href="#" class="text-decoration-none">Soporte</a>
+                    | <a href="#" class="text-decoration-none">Documentación</a> -->
                 </small>
             </footer>
             </div>
