@@ -58,7 +58,7 @@ class ProductoController
      */
     public function crear()
     {
-        $categorias = $this->categoria->listar(true); // Solo activas
+        $categorias = $this->categoria->listar(); // Todas las categorías
         require_once __DIR__ . '/../views/productos/crear.php';
     }
 
@@ -68,7 +68,7 @@ class ProductoController
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('productos');
+            redirect('index.php?action=productos');
             return;
         }
 
@@ -77,11 +77,12 @@ class ProductoController
         $nombre = sanitize_input($_POST['nombre'] ?? '');
         $descripcion = sanitize_input($_POST['descripcion'] ?? '');
         $precio = $_POST['precio'] ?? 0;
-        $disponible = isset($_POST['disponible']) ? 1 : 0;
+        // El campo oculto envía 0, el checkbox envía 1 si está marcado
+        $disponible = isset($_POST['disponible']) ? (int)$_POST['disponible'] : 0;
 
         if (empty($nombre) || !$categoria_id || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('productos/crear');
+            redirect('index.php?action=productos_crear');
             return;
         }
 
@@ -94,7 +95,7 @@ class ProductoController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('productos/crear');
+                redirect('index.php?action=productos_crear');
                 return;
             }
         }
@@ -110,14 +111,14 @@ class ProductoController
         // Crear producto
         if ($this->producto->crear()) {
             set_flash_message('Producto creado exitosamente', 'success');
-            redirect('productos');
+            redirect('index.php?action=productos');
         } else {
             // Eliminar imagen si falla la creación
             if ($imagen_url && file_exists($imagen_url)) {
                 unlink($imagen_url);
             }
             set_flash_message('Error al crear el producto', 'error');
-            redirect('productos/crear');
+            redirect('index.php?action=productos_crear');
         }
     }
 
@@ -130,7 +131,7 @@ class ProductoController
 
         if (!$id) {
             set_flash_message('ID de producto no válido', 'error');
-            redirect('productos');
+            redirect('index.php?action=productos');
             return;
         }
 
@@ -138,12 +139,12 @@ class ProductoController
         $producto = $this->producto->obtenerPorId();
 
         if (!$producto) {
-            set_flash_message('Producto no encontrado', 'error');
-            redirect('productos');
+            set_flash_message('Producto no encontrada', 'error');
+            redirect('index.php?action=productos');
             return;
         }
 
-        $categorias = $this->categoria->listar(true);
+        $categorias = $this->categoria->listar(); // Todas las categorías
         require_once __DIR__ . '/../views/productos/editar.php';
     }
 
@@ -153,7 +154,7 @@ class ProductoController
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('productos');
+            redirect('index.php?action=productos');
             return;
         }
 
@@ -162,11 +163,12 @@ class ProductoController
         $nombre = sanitize_input($_POST['nombre'] ?? '');
         $descripcion = sanitize_input($_POST['descripcion'] ?? '');
         $precio = $_POST['precio'] ?? 0;
-        $disponible = isset($_POST['disponible']) ? 1 : 0;
+        // El campo oculto envía 0, el checkbox envía 1 si está marcado
+        $disponible = isset($_POST['disponible']) ? (int)$_POST['disponible'] : 0;
 
         if (!$id || empty($nombre) || !$categoria_id || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('productos');
+            redirect('index.php?action=productos');
             return;
         }
 
@@ -176,7 +178,7 @@ class ProductoController
 
         if (!$producto_actual) {
             set_flash_message('Producto no encontrado', 'error');
-            redirect('productos');
+            redirect('index.php?action=productos');
             return;
         }
 
@@ -194,7 +196,7 @@ class ProductoController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('productos/editar?id=' . $id);
+                redirect('index.php?action=productos_editar&id=' . $id);
                 return;
             }
         }
@@ -211,10 +213,10 @@ class ProductoController
         // Actualizar
         if ($this->producto->actualizar()) {
             set_flash_message('Producto actualizado exitosamente', 'success');
-            redirect('productos');
+            redirect('index.php?action=productos');
         } else {
             set_flash_message('Error al actualizar el producto', 'error');
-            redirect('productos/editar?id=' . $id);
+            redirect('index.php?action=productos_editar&id=' . $id);
         }
     }
 

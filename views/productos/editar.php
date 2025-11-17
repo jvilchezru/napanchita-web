@@ -1,178 +1,224 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php
+$pageTitle = 'Editar Producto';
+include __DIR__ . '/../layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Producto - Sistema Napanchita</title>
+<style>
+    .imagen-preview,
+    .imagen-actual {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    .imagen-preview {
+        display: none;
+    }
+</style>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+<div class="page-header">
+    <h1><i class="fas fa-edit me-2"></i> Editar Producto</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=productos">Productos</a></li>
+            <li class="breadcrumb-item active">Editar</li>
+        </ol>
+    </nav>
+</div>
 
-        .header-section {
-            background: linear-gradient(135deg, #17a2b8 0%, #00bcd4 100%);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .imagen-preview,
-        .imagen-actual {
-            max-width: 200px;
-            max-height: 200px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-
-        .imagen-preview {
-            display: none;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Header -->
-    <div class="header-section">
-        <div class="container">
-            <h1><i class="fas fa-edit"></i> Editar Producto</h1>
-            <p class="mb-0">Modifica los datos del producto</p>
-        </div>
+<!-- Mensajes Flash -->
+<?php if (has_flash_message()): ?>
+    <?php $flash = get_flash_message(); ?>
+    <div class="alert alert-<?php echo $flash['type'] === 'error' ? 'danger' : $flash['type']; ?> alert-dismissible fade show">
+        <i class="fas fa-<?php echo $flash['type'] === 'error' ? 'exclamation-circle' : ($flash['type'] === 'success' ? 'check-circle' : 'info-circle'); ?> me-2"></i>
+        <?php echo $flash['message']; ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+<?php endif; ?>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <!-- Mensajes Flash -->
-                <?php if (has_flash_message()): ?>
-                    <?php $flash = get_flash_message(); ?>
-                    <div class="alert alert-<?php echo $flash['type'] === 'error' ? 'danger' : $flash['type']; ?> alert-dismissible fade show">
-                        <?php echo $flash['message']; ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-fish me-2"></i> Modificar Datos del Producto
+            </div>
+            <div class="card-body">
+                <form action="<?php echo BASE_URL; ?>index.php?action=productos_actualizar" method="POST" enctype="multipart/form-data" id="formEditarProducto">
+                    <input type="hidden" name="id" value="<?php echo $producto['id']; ?>">
+
+                    <div class="mb-3">
+                        <label for="categoria_id" class="form-label">
+                            <i class="fas fa-tags me-1"></i> Categoría <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="categoria_id" name="categoria_id" required>
+                            <option value="">Seleccionar categoría...</option>
+                            <?php foreach ($categorias as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>"
+                                    <?php echo $cat['id'] == $producto['categoria_id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['nombre']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small class="form-text text-muted">Categoría del producto</small>
                     </div>
-                <?php endif; ?>
 
-                <div class="card">
-                    <div class="card-header bg-warning">
-                        <h5 class="mb-0"><i class="fas fa-edit"></i> Datos del Producto</h5>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">
+                            <i class="fas fa-utensils me-1"></i> Nombre <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="nombre" name="nombre"
+                            value="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                            placeholder="Ej: Ceviche de pescado, Chicharrón de pota" required maxlength="100">
+                        <small class="form-text text-muted">Nombre del producto</small>
                     </div>
-                    <div class="card-body">
-                        <form action="<?php echo BASE_URL; ?>index.php?controller=productos&action=actualizar"
-                            method="POST" enctype="multipart/form-data">
 
-                            <input type="hidden" name="id" value="<?php echo $producto['id']; ?>">
-
-                            <div class="mb-3">
-                                <label for="categoria_id" class="form-label">Categoría <span class="text-danger">*</span></label>
-                                <select class="form-select" id="categoria_id" name="categoria_id" required>
-                                    <option value="">Seleccionar categoría...</option>
-                                    <?php foreach ($categorias as $cat): ?>
-                                        <option value="<?php echo $cat['id']; ?>"
-                                            <?php echo $cat['id'] == $producto['categoria_id'] ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($cat['nombre']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nombre" name="nombre"
-                                    value="<?php echo htmlspecialchars($producto['nombre']); ?>"
-                                    placeholder="Ej: Ceviche de pescado, Chicharrón de pota" required maxlength="100">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion"
-                                    rows="3" placeholder="Descripción detallada del producto"><?php echo htmlspecialchars($producto['descripcion'] ?? ''); ?></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="precio" class="form-label">Precio (S/) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="precio" name="precio"
-                                    step="0.01" min="0.01" value="<?php echo $producto['precio']; ?>"
-                                    placeholder="0.00" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="imagen" class="form-label">Imagen del Producto</label>
-
-                                <?php if (!empty($producto['imagen_url']) && file_exists($producto['imagen_url'])): ?>
-                                    <div class="mb-2">
-                                        <label class="form-label">Imagen actual:</label><br>
-                                        <img src="<?php echo BASE_URL . $producto['imagen_url']; ?>"
-                                            alt="<?php echo htmlspecialchars($producto['nombre']); ?>"
-                                            class="imagen-actual">
-                                    </div>
-                                <?php endif; ?>
-
-                                <input type="file" class="form-control" id="imagen" name="imagen"
-                                    accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImagen(event)">
-                                <small class="form-text text-muted">
-                                    <?php if (!empty($producto['imagen_url'])): ?>
-                                        Sube una nueva imagen solo si deseas cambiar la actual.
-                                    <?php endif; ?>
-                                    Formatos permitidos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB
-                                </small>
-                                <img id="imagenPreview" class="imagen-preview" alt="Vista previa">
-                            </div>
-
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="disponible" name="disponible"
-                                    <?php echo $producto['disponible'] ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="disponible">
-                                    Producto disponible
-                                </label>
-                            </div>
-
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="<?php echo BASE_URL; ?>index.php?controller=productos&action=index"
-                                    class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="fas fa-save"></i> Actualizar Producto
-                                </button>
-                            </div>
-                        </form>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">
+                            <i class="fas fa-align-left me-1"></i> Descripción
+                        </label>
+                        <textarea class="form-control" id="descripcion" name="descripcion"
+                            rows="3" placeholder="Descripción detallada del producto"><?php echo htmlspecialchars($producto['descripcion'] ?? ''); ?></textarea>
                     </div>
-                </div>
+
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i> Precio (S/) <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="precio" name="precio"
+                            step="0.01" min="0.01" value="<?php echo $producto['precio']; ?>"
+                            placeholder="0.00" required>
+                        <small class="form-text text-muted">Precio del producto en soles</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">
+                            <i class="fas fa-image me-1"></i> Imagen del Producto
+                        </label>
+
+                        <?php if (!empty($producto['imagen_url']) && file_exists($producto['imagen_url'])): ?>
+                            <div class="mb-2">
+                                <label class="form-label d-block"><strong>Imagen actual:</strong></label>
+                                <img src="<?php echo BASE_URL . $producto['imagen_url']; ?>"
+                                    alt="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                                    class="imagen-actual">
+                            </div>
+                        <?php endif; ?>
+
+                        <input type="file" class="form-control" id="imagen" name="imagen"
+                            accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImagen(event)">
+                        <small class="form-text text-muted">
+                            <?php if (!empty($producto['imagen_url'])): ?>
+                                Sube una nueva imagen solo si deseas cambiar la actual.
+                            <?php endif; ?>
+                            Formatos permitidos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB
+                        </small>
+                        <img id="imagenPreview" class="imagen-preview" alt="Vista previa">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="hidden" name="disponible" value="0">
+                            <input class="form-check-input" type="checkbox" id="disponible" name="disponible" value="1"
+                                <?php
+                                $disponible = isset($producto['disponible']) ? (int)$producto['disponible'] : 0;
+                                echo ($disponible === 1) ? 'checked' : '';
+                                ?>>
+                            <label class="form-check-label" for="disponible">
+                                <i class="fas fa-check-circle text-success me-1"></i> Producto disponible
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                Si está desactivado, no aparecerá en el menú
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="<?php echo BASE_URL; ?>index.php?action=productos" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Actualizar Producto
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php
+$extraScripts = '
+<script>
+    function previewImagen(event) {
+        const preview = document.getElementById("imagenPreview");
+        const file = event.target.files[0];
 
-    <script>
-        function previewImagen(event) {
-            const preview = document.getElementById('imagenPreview');
-            const file = event.target.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
+        if (file) {
+            // Validar tamaño (5MB máximo)
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "La imagen no debe superar los 5MB"
+                });
+                event.target.value = "";
+                preview.style.display = "none";
+                return;
             }
-        }
-    </script>
-</body>
 
-</html>
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = "none";
+        }
+    }
+
+    // Validación del formulario
+    document.getElementById("formEditarProducto").addEventListener("submit", function(e) {
+        const nombre = document.getElementById("nombre").value.trim();
+        const precio = parseFloat(document.getElementById("precio").value);
+        const categoria = document.getElementById("categoria_id").value;
+        
+        if (!categoria) {
+            e.preventDefault();
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Debes seleccionar una categoría"
+            });
+            return false;
+        }
+        
+        if (nombre.length < 3) {
+            e.preventDefault();
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "El nombre debe tener al menos 3 caracteres"
+            });
+            return false;
+        }
+        
+        if (precio <= 0) {
+            e.preventDefault();
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "El precio debe ser mayor a 0"
+            });
+            return false;
+        }
+    });
+</script>
+';
+
+include __DIR__ . '/../layouts/footer.php';
+?>

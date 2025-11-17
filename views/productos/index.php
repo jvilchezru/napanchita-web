@@ -120,9 +120,11 @@ include __DIR__ . '/../layouts/header.php';
                                 <br>
                                 <small class="text-muted"><?php echo htmlspecialchars(substr($prod['descripcion'] ?? '', 0, 50)); ?></small>
                             </td>
-                            <td><?php echo htmlspecialchars($prod['categoria_nombre'] ?? 'Sin categoría'); ?></td>
+                            <td data-categoria="<?php echo htmlspecialchars($prod['categoria_nombre'] ?? 'Sin categoría'); ?>">
+                                <?php echo htmlspecialchars($prod['categoria_nombre'] ?? 'Sin categoría'); ?>
+                            </td>
                             <td><strong>S/ <?php echo number_format($prod['precio'], 2); ?></strong></td>
-                            <td>
+                            <td data-disponible="<?php echo $prod['disponible'] ? 'Disponible' : 'No Disponible'; ?>">
                                 <span class="badge <?php echo $prod['disponible'] ? 'badge-disponible' : 'badge-no-disponible'; ?>">
                                     <?php echo $prod['disponible'] ? 'Disponible' : 'No Disponible'; ?>
                                 </span>
@@ -153,26 +155,94 @@ include __DIR__ . '/../layouts/header.php';
 
 <script>
     let tabla;
+    let filtroCategoriaActual = '';
+    let filtroDisponibleActual = '';
 
     $(document).ready(function() {
+        // Filtro personalizado global
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex, rowData, counter) {
+                // DEBUG: Mostrar valores
+                console.log('=== FILTRO EJECUTÁNDOSE ===');
+                console.log('DataIndex:', dataIndex);
+                console.log('Data Array:', data);
+                console.log('Filtro Categoría Actual:', filtroCategoriaActual);
+                console.log('Filtro Disponible Actual:', filtroDisponibleActual);
+
+                // Obtener la fila actual del DOM
+                const row = tabla.row(dataIndex).node();
+                console.log('Row:', row);
+
+                // Verificar filtro de categoría
+                if (filtroCategoriaActual !== '') {
+                    const categoriaCell = $(row).find('td').eq(3); // Columna de categoría
+                    const categoriaValor = categoriaCell.attr('data-categoria') || categoriaCell.text().trim();
+
+                    console.log('Categoría Cell:', categoriaCell);
+                    console.log('Categoría Valor obtenido:', categoriaValor);
+                    console.log('Comparando:', categoriaValor, '===', filtroCategoriaActual);
+
+                    if (categoriaValor !== filtroCategoriaActual) {
+                        console.log('❌ NO PASA filtro de categoría');
+                        return false;
+                    }
+                    console.log('✅ PASA filtro de categoría');
+                }
+
+                // Verificar filtro de disponibilidad
+                if (filtroDisponibleActual !== '') {
+                    const disponibleCell = $(row).find('td').eq(5); // Columna de disponibilidad
+                    const disponibleValor = disponibleCell.attr('data-disponible') || disponibleCell.text().trim();
+
+                    console.log('Disponible Cell:', disponibleCell);
+                    console.log('Disponible Valor obtenido:', disponibleValor);
+                    console.log('Comparando:', disponibleValor, '===', filtroDisponibleActual);
+
+                    if (disponibleValor !== filtroDisponibleActual) {
+                        console.log('❌ NO PASA filtro de disponibilidad');
+                        return false;
+                    }
+                    console.log('✅ PASA filtro de disponibilidad');
+                }
+
+                console.log('✅ FILA MOSTRADA');
+                return true;
+            }
+        );
+
+        // Inicializar DataTable
         tabla = $('#tablaProductos').DataTable({
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
             },
             order: [
-                [3, 'asc'],
-                [2, 'asc']
-            ] // Ordenar por categoría y nombre
+                [3, 'asc'], // Ordenar por categoría
+                [2, 'asc'] // Luego por nombre
+            ]
         });
 
         // Filtro por categoría
         $('#filtroCategoria').on('change', function() {
-            tabla.column(3).search(this.value).draw();
+            const valorAnterior = filtroCategoriaActual;
+            filtroCategoriaActual = this.value;
+            console.log('🔍 CAMBIO FILTRO CATEGORÍA');
+            console.log('Valor anterior:', valorAnterior);
+            console.log('Valor nuevo:', filtroCategoriaActual);
+            console.log('Ejecutando tabla.draw()...');
+            tabla.draw();
+            console.log('tabla.draw() ejecutado');
         });
 
         // Filtro por disponibilidad
         $('#filtroDisponible').on('change', function() {
-            tabla.column(5).search(this.value).draw();
+            const valorAnterior = filtroDisponibleActual;
+            filtroDisponibleActual = this.value;
+            console.log('🔍 CAMBIO FILTRO DISPONIBILIDAD');
+            console.log('Valor anterior:', valorAnterior);
+            console.log('Valor nuevo:', filtroDisponibleActual);
+            console.log('Ejecutando tabla.draw()...');
+            tabla.draw();
+            console.log('tabla.draw() ejecutado');
         });
     });
 

@@ -48,7 +48,7 @@ include __DIR__ . '/../layouts/header.php';
                     <h5 class="mb-0"><i class="fas fa-list"></i> Listado de Categorías</h5>
                 </div>
                 <div class="col-auto">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=categorias_crear" class="btn btn-light btn-sm">
+                    <a href="<?php echo BASE_URL; ?>index.php?action=categorias_crear" class="btn btn-success btn-sm">
                         <i class="fas fa-plus"></i> Nueva Categoría
                     </a>
                 </div>

@@ -4,166 +4,168 @@ include __DIR__ . '/../layouts/header.php';
 ?>
 
 <div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1><i class="fas fa-users-cog me-2"></i> Gestión de Usuarios</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Usuarios</li>
-                </ol>
-            </nav>
-        </div>
-        <div>
-            <a href="<?php echo BASE_URL; ?>index.php?action=usuarios_crear" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i> Nuevo Usuario
-            </a>
-        </div>
-    </div>
+    <h1><i class="fas fa-users-cog me-2"></i> Gestión de Usuarios</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item active">Usuarios</li>
+        </ol>
+    </nav>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-list me-2"></i> Lista de Usuarios del Sistema
-    </div>
-    <div class="card-body">
-        <!-- Filtros -->
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="filtroRol" class="form-label">Filtrar por Rol:</label>
-                <select class="form-select" id="filtroRol">
-                    <option value="">Todos los roles</option>
-                    <option value="admin">Administrador</option>
-                    <option value="mesero">Mesero</option>
-                    <option value="repartidor">Repartidor</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label for="filtroEstado" class="form-label">Filtrar por Estado:</label>
-                <select class="form-select" id="filtroEstado">
-                    <option value="">Todos los estados</option>
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">&nbsp;</label>
-                <button class="btn btn-secondary w-100" id="btnLimpiarFiltros">
-                    <i class="fas fa-times me-2"></i> Limpiar Filtros
-                </button>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Listado de Usuarios</h5>
+                </div>
+                <div class="col-auto">
+                    <a href="<?php echo BASE_URL; ?>index.php?action=usuarios_crear" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Nuevo Usuario
+                    </a>
+                </div>
             </div>
         </div>
+        <div class="card-body">
+            <!-- Filtros -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="filtroRol" class="form-label">Filtrar por Rol:</label>
+                    <select class="form-select" id="filtroRol">
+                        <option value="">Todos los roles</option>
+                        <option value="admin">Administrador</option>
+                        <option value="mesero">Mesero</option>
+                        <option value="repartidor">Repartidor</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filtroEstado" class="form-label">Filtrar por Estado:</label>
+                    <select class="form-select" id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="btn btn-secondary w-100" id="btnLimpiarFiltros">
+                        <i class="fas fa-times me-2"></i> Limpiar Filtros
+                    </button>
+                </div>
+            </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover" id="tablaUsuarios">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Teléfono</th>
-                        <th>Estado</th>
-                        <th>Fecha Registro</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (isset($usuarios) && count($usuarios) > 0): ?>
-                        <?php foreach ($usuarios as $usuario): ?>
-                            <tr>
-                                <td><?php echo $usuario['id']; ?></td>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($usuario['nombre']); ?></strong>
-                                </td>
-                                <td><?php echo htmlspecialchars($usuario['email']); ?></td>
-                                <td>
-                                    <?php
-                                    $badgeClass = '';
-                                    $iconClass = '';
-                                    switch ($usuario['rol']) {
-                                        case 'admin':
-                                            $badgeClass = 'bg-danger';
-                                            $iconClass = 'fa-user-shield';
-                                            $rolText = 'Administrador';
-                                            break;
-                                        case 'mesero':
-                                            $badgeClass = 'bg-primary';
-                                            $iconClass = 'fa-concierge-bell';
-                                            $rolText = 'Mesero';
-                                            break;
-                                        case 'repartidor':
-                                            $badgeClass = 'bg-success';
-                                            $iconClass = 'fa-truck';
-                                            $rolText = 'Repartidor';
-                                            break;
-                                        default:
-                                            $badgeClass = 'bg-secondary';
-                                            $iconClass = 'fa-user';
-                                            $rolText = ucfirst($usuario['rol']);
-                                    }
-                                    ?>
-                                    <span class="badge <?php echo $badgeClass; ?>">
-                                        <i class="fas <?php echo $iconClass; ?> me-1"></i>
-                                        <?php echo $rolText; ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($usuario['telefono'] ?? '-'); ?></td>
-                                <td>
-                                    <?php if ($usuario['activo']): ?>
-                                        <span class="badge badge-activo">
-                                            <i class="fas fa-check-circle me-1"></i> Activo
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="tablaUsuarios">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (isset($usuarios) && count($usuarios) > 0): ?>
+                            <?php foreach ($usuarios as $usuario): ?>
+                                <tr>
+                                    <td><?php echo $usuario['id']; ?></td>
+                                    <td>
+                                        <strong><?php echo htmlspecialchars($usuario['nombre']); ?></strong>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($usuario['email']); ?></td>
+                                    <td>
+                                        <?php
+                                        $badgeClass = '';
+                                        $iconClass = '';
+                                        switch ($usuario['rol']) {
+                                            case 'admin':
+                                                $badgeClass = 'bg-danger';
+                                                $iconClass = 'fa-user-shield';
+                                                $rolText = 'Administrador';
+                                                break;
+                                            case 'mesero':
+                                                $badgeClass = 'bg-primary';
+                                                $iconClass = 'fa-concierge-bell';
+                                                $rolText = 'Mesero';
+                                                break;
+                                            case 'repartidor':
+                                                $badgeClass = 'bg-success';
+                                                $iconClass = 'fa-truck';
+                                                $rolText = 'Repartidor';
+                                                break;
+                                            default:
+                                                $badgeClass = 'bg-secondary';
+                                                $iconClass = 'fa-user';
+                                                $rolText = ucfirst($usuario['rol']);
+                                        }
+                                        ?>
+                                        <span class="badge <?php echo $badgeClass; ?>">
+                                            <i class="fas <?php echo $iconClass; ?> me-1"></i>
+                                            <?php echo $rolText; ?>
                                         </span>
-                                    <?php else: ?>
-                                        <span class="badge badge-inactivo">
-                                            <i class="fas fa-times-circle me-1"></i> Inactivo
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo date('d/m/Y', strtotime($usuario['fecha_registro'])); ?></td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="<?php echo BASE_URL; ?>index.php?action=usuarios_editar&id=<?php echo $usuario['id']; ?>"
-                                            class="btn btn-sm btn-info"
-                                            title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-
-                                        <?php if ($usuario['id'] != $_SESSION['usuario_id']): ?>
-                                            <button type="button"
-                                                class="btn btn-sm btn-warning btn-cambiar-estado"
-                                                data-id="<?php echo $usuario['id']; ?>"
-                                                data-estado="<?php echo $usuario['activo']; ?>"
-                                                title="<?php echo $usuario['activo'] ? 'Desactivar' : 'Activar'; ?>">
-                                                <i class="fas fa-<?php echo $usuario['activo'] ? 'ban' : 'check'; ?>"></i>
-                                            </button>
-
-                                            <button type="button"
-                                                class="btn btn-sm btn-danger btn-eliminar"
-                                                data-id="<?php echo $usuario['id']; ?>"
-                                                data-nombre="<?php echo htmlspecialchars($usuario['nombre']); ?>"
-                                                title="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($usuario['telefono'] ?? '-'); ?></td>
+                                    <td>
+                                        <?php if ($usuario['activo']): ?>
+                                            <span class="badge badge-activo">
+                                                <i class="fas fa-check-circle me-1"></i> Activo
+                                            </span>
                                         <?php else: ?>
-                                            <button type="button" class="btn btn-sm btn-secondary" disabled title="No puedes modificar tu propio usuario">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
+                                            <span class="badge badge-inactivo">
+                                                <i class="fas fa-times-circle me-1"></i> Inactivo
+                                            </span>
                                         <?php endif; ?>
-                                    </div>
+                                    </td>
+                                    <td><?php echo date('d/m/Y', strtotime($usuario['fecha_registro'])); ?></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="<?php echo BASE_URL; ?>index.php?action=usuarios_editar&id=<?php echo $usuario['id']; ?>"
+                                                class="btn btn-sm btn-info"
+                                                title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <?php if ($usuario['id'] != $_SESSION['usuario_id']): ?>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-warning btn-cambiar-estado"
+                                                    data-id="<?php echo $usuario['id']; ?>"
+                                                    data-estado="<?php echo $usuario['activo']; ?>"
+                                                    title="<?php echo $usuario['activo'] ? 'Desactivar' : 'Activar'; ?>">
+                                                    <i class="fas fa-<?php echo $usuario['activo'] ? 'ban' : 'check'; ?>"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-eliminar"
+                                                    data-id="<?php echo $usuario['id']; ?>"
+                                                    data-nombre="<?php echo htmlspecialchars($usuario['nombre']); ?>"
+                                                    title="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php else: ?>
+                                                <button type="button" class="btn btn-sm btn-secondary" disabled title="No puedes modificar tu propio usuario">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <p>No hay usuarios registrados</p>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                <i class="fas fa-users fa-3x mb-3"></i>
-                                <p>No hay usuarios registrados</p>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
