@@ -42,14 +42,14 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=combos">
+                <a href="<?php echo BASE_URL; ?>index.php?action=combos" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'combo') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-box-open"></i> Combos
                 </a>
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=mesas">
-                    <i class="fas fa-table"></i> Mesas
+                <a href="<?php echo BASE_URL; ?>index.php?action=mesas" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'mesa') !== false) ? 'active' : ''; ?>">
+                    <i class="fas fa-chair"></i> Mesas
                 </a>
             </li>
 

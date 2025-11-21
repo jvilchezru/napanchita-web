@@ -57,7 +57,7 @@ class ComboController
      */
     public function crear()
     {
-        $productos = $this->producto->listar(true); // Solo disponibles
+        $productos = $this->producto->listar(); // Todos los productos
         require_once __DIR__ . '/../views/combos/crear.php';
     }
 
@@ -67,7 +67,7 @@ class ComboController
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
@@ -75,18 +75,19 @@ class ComboController
         $nombre = sanitize_input($_POST['nombre'] ?? '');
         $descripcion = sanitize_input($_POST['descripcion'] ?? '');
         $precio = $_POST['precio'] ?? 0;
-        $activo = isset($_POST['activo']) ? 1 : 0;
+        // El campo oculto envía 0, el checkbox envía 1 si está marcado
+        $activo = isset($_POST['activo']) ? (int)$_POST['activo'] : 0;
         $productos_combo = $_POST['productos'] ?? [];
 
         if (empty($nombre) || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('combos/crear');
+            redirect('index.php?action=combos_crear');
             return;
         }
 
         if (empty($productos_combo)) {
             set_flash_message('Debe agregar al menos un producto al combo', 'error');
-            redirect('combos/crear');
+            redirect('index.php?action=combos_crear');
             return;
         }
 
@@ -99,7 +100,7 @@ class ComboController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('combos/crear');
+                redirect('index.php?action=combos_crear');
                 return;
             }
         }
@@ -128,13 +129,13 @@ class ComboController
 
             if ($productos_agregados) {
                 set_flash_message('Combo creado exitosamente', 'success');
-                redirect('combos');
+                redirect('index.php?action=combos');
             } else {
                 // Si falla agregar productos, eliminar combo
                 $this->combo->id = $combo_id;
                 $this->combo->eliminar();
                 set_flash_message('Error al agregar productos al combo', 'error');
-                redirect('combos/crear');
+                redirect('index.php?action=combos_crear');
             }
         } else {
             // Eliminar imagen si falla la creación
@@ -142,7 +143,7 @@ class ComboController
                 unlink($imagen_url);
             }
             set_flash_message('Error al crear el combo', 'error');
-            redirect('combos/crear');
+            redirect('index.php?action=combos_crear');
         }
     }
 
@@ -155,7 +156,7 @@ class ComboController
 
         if (!$id) {
             set_flash_message('ID de combo no válido', 'error');
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
@@ -164,11 +165,11 @@ class ComboController
 
         if (!$combo) {
             set_flash_message('Combo no encontrado', 'error');
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
-        $productos = $this->producto->listar(true);
+        $productos = $this->producto->listar(); // Todos los productos
         require_once __DIR__ . '/../views/combos/editar.php';
     }
 
@@ -178,7 +179,7 @@ class ComboController
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
@@ -186,18 +187,19 @@ class ComboController
         $nombre = sanitize_input($_POST['nombre'] ?? '');
         $descripcion = sanitize_input($_POST['descripcion'] ?? '');
         $precio = $_POST['precio'] ?? 0;
-        $activo = isset($_POST['activo']) ? 1 : 0;
+        // El campo oculto envía 0, el checkbox envía 1 si está marcado
+        $activo = isset($_POST['activo']) ? (int)$_POST['activo'] : 0;
         $productos_combo = $_POST['productos'] ?? [];
 
         if (!$id || empty($nombre) || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
         if (empty($productos_combo)) {
             set_flash_message('Debe agregar al menos un producto al combo', 'error');
-            redirect('combos/editar?id=' . $id);
+            redirect('index.php?action=combos_editar&id=' . $id);
             return;
         }
 
@@ -207,7 +209,7 @@ class ComboController
 
         if (!$combo_actual) {
             set_flash_message('Combo no encontrado', 'error');
-            redirect('combos');
+            redirect('index.php?action=combos');
             return;
         }
 
@@ -225,7 +227,7 @@ class ComboController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('combos/editar?id=' . $id);
+                redirect('index.php?action=combos_editar&id=' . $id);
                 return;
             }
         }
@@ -243,14 +245,14 @@ class ComboController
             // Actualizar productos del combo
             if ($this->combo->actualizarProductos($id, $productos_combo)) {
                 set_flash_message('Combo actualizado exitosamente', 'success');
-                redirect('combos');
+                redirect('index.php?action=combos');
             } else {
                 set_flash_message('Error al actualizar productos del combo', 'error');
-                redirect('combos/editar?id=' . $id);
+                redirect('index.php?action=combos_editar&id=' . $id);
             }
         } else {
             set_flash_message('Error al actualizar el combo', 'error');
-            redirect('combos/editar?id=' . $id);
+            redirect('index.php?action=combos_editar&id=' . $id);
         }
     }
 

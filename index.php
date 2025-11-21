@@ -302,6 +302,70 @@ try {
                 $controller->cambiarEstado();
                 break;
 
+            // ===== MESAS (Solo Admin) =====
+            case 'mesas':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->index();
+                break;
+
+            case 'mesas_crear':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->crear();
+                break;
+
+            case 'mesas_guardar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->guardar();
+                break;
+
+            case 'mesas_editar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->editar();
+                break;
+
+            case 'mesas_actualizar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->actualizar();
+                break;
+
+            case 'mesas_cambiarEstado':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->cambiarEstado();
+                break;
+
+            case 'mesas_actualizarPosicion':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->actualizarPosicion();
+                break;
+
+            case 'mesas_eliminar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->eliminar();
+                break;
+
+            case 'mesas_listarJson':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MesaController.php';
+                $controller = new MesaController();
+                $controller->listarJson();
+                break;
+
             case 'combos_eliminar':
                 AuthController::verificarAdmin();
                 require_once __DIR__ . '/controllers/ComboController.php';
