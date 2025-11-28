@@ -22,11 +22,11 @@ class Cliente
 
     /**
      * Constructor
-     * @param PDO $db Conexión a base de datos
      */
-    public function __construct($db)
+    public function __construct()
     {
-        $this->conn = $db;
+        $database = new Database();
+        $this->conn = $database->getConnection();
     }
 
     /**
@@ -114,19 +114,25 @@ class Cliente
     }
 
     /**
-     * Listar todos los clientes activos
-     * @return PDOStatement
+     * Listar clientes
+     * @param bool $soloActivos Si es true, solo retorna clientes activos
+     * @return array Array de clientes
      */
-    public function listar()
+    public function listar($soloActivos = true)
     {
         $query = "SELECT id, nombre, telefono, email, fecha_registro, activo 
-                  FROM " . $this->table . " 
-                  WHERE activo = TRUE
-                  ORDER BY nombre ASC";
+                  FROM " . $this->table . " ";
+
+        if ($soloActivos) {
+            $query .= "WHERE activo = TRUE ";
+        }
+
+        $query .= "ORDER BY nombre ASC";
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
-        return $stmt;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

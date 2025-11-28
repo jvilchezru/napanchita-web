@@ -140,6 +140,56 @@ try {
                 }
                 break;
 
+            // ===== CLIENTES (Solo Admin) =====
+            case 'clientes':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->index();
+                break;
+
+            case 'clientes_crear':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->crear();
+                break;
+
+            case 'clientes_guardar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->guardar();
+                break;
+
+            case 'clientes_editar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->editar();
+                break;
+
+            case 'clientes_actualizar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->actualizar();
+                break;
+
+            case 'clientes_eliminar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->eliminar();
+                break;
+
+            case 'clientes_buscar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ClienteController.php';
+                $controller = new ClienteController();
+                $controller->buscar();
+                break;
+
             case 'usuarios_eliminar':
                 AuthController::verificarAdmin();
                 require_once __DIR__ . '/controllers/UsuarioController.php';

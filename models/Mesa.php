@@ -118,9 +118,9 @@ class Mesa
     public function crear()
     {
         $query = "INSERT INTO " . $this->table . " 
-                  (numero, capacidad, estado, posicion_x, posicion_y, activo) 
-                  VALUES 
-                  (:numero, :capacidad, :estado, :posicion_x, :posicion_y, :activo)";
+                    (numero, capacidad, estado, posicion_x, posicion_y, activo) 
+                    VALUES 
+                    (:numero, :capacidad, :estado, :posicion_x, :posicion_y, :activo)";
 
         $stmt = $this->db->prepare($query);
 
@@ -153,13 +153,13 @@ class Mesa
     public function actualizar()
     {
         $query = "UPDATE " . $this->table . " 
-                  SET numero = :numero,
-                      capacidad = :capacidad,
-                      estado = :estado,
-                      posicion_x = :posicion_x,
-                      posicion_y = :posicion_y,
-                      activo = :activo
-                  WHERE id = :id";
+                    SET numero = :numero,
+                        capacidad = :capacidad,
+                        estado = :estado,
+                        posicion_x = :posicion_x,
+                        posicion_y = :posicion_y,
+                        activo = :activo
+                    WHERE id = :id";
 
         $stmt = $this->db->prepare($query);
 
@@ -190,8 +190,8 @@ class Mesa
     public function cambiarEstado($id, $nuevoEstado)
     {
         $query = "UPDATE " . $this->table . " 
-                  SET estado = :estado 
-                  WHERE id = :id";
+                    SET estado = :estado 
+                    WHERE id = :id";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':estado', $nuevoEstado);
@@ -211,8 +211,8 @@ class Mesa
     public function actualizarPosicion($id, $x, $y)
     {
         $query = "UPDATE " . $this->table . " 
-                  SET posicion_x = :x, posicion_y = :y 
-                  WHERE id = :id";
+                    SET posicion_x = :x, posicion_y = :y 
+                    WHERE id = :id";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':x', $x);
@@ -230,8 +230,8 @@ class Mesa
     public function eliminar()
     {
         $query = "UPDATE " . $this->table . " 
-                  SET activo = 0, estado = 'inactiva' 
-                  WHERE id = :id";
+                    SET activo = 0, estado = 'inactiva' 
+                    WHERE id = :id";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $this->id);
@@ -247,9 +247,9 @@ class Mesa
     public function contarPorEstado()
     {
         $query = "SELECT estado, COUNT(*) as total 
-                  FROM " . $this->table . " 
-                  WHERE activo = 1 
-                  GROUP BY estado";
+                    FROM " . $this->table . " 
+                    WHERE activo = 1 
+                    GROUP BY estado";
 
         $stmt = $this->db->prepare($query);
         $stmt->execute();

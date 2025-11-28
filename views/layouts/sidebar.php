@@ -24,19 +24,19 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=clientes">
+                <a href="<?php echo BASE_URL; ?>index.php?action=clientes" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'cliente') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-users"></i> Clientes
                 </a>
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=categorias">
+                <a href="<?php echo BASE_URL; ?>index.php?action=categorias" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'categoria') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-tags"></i> Categorías
                 </a>
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=productos">
+                <a href="<?php echo BASE_URL; ?>index.php?action=productos" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'producto') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-fish"></i> Productos
                 </a>
             </li>
