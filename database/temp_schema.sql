@@ -63,7 +63,7 @@ CREATE TABLE categorias (
 -- TABLA: PRODUCTOS
 -- ============================================
 
-CREATE TABLE productos (
+CREATE TABLE platos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
@@ -100,18 +100,18 @@ CREATE TABLE combos (
 -- TABLA: COMBO_PRODUCTOS (RelaciÃ³n N:M)
 -- ============================================
 
-CREATE TABLE combo_productos (
+CREATE TABLE combo_platos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     combo_id INT NOT NULL,
-    producto_id INT NOT NULL,
+    plato_id INT NOT NULL,
     cantidad INT NOT NULL DEFAULT 1 CHECK (cantidad > 0),
     
     FOREIGN KEY (combo_id) REFERENCES combos(id) ON DELETE CASCADE,
-    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    FOREIGN KEY (plato_id) REFERENCES platos(id) ON DELETE CASCADE,
     
-    UNIQUE KEY uk_combo_producto (combo_id, producto_id),
+    UNIQUE KEY uk_combo_producto (combo_id, plato_id),
     INDEX idx_combo_productos_combo (combo_id),
-    INDEX idx_combo_productos_producto (producto_id)
+    INDEX idx_combo_productos_producto (plato_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
@@ -198,7 +198,7 @@ CREATE TABLE pedidos (
 CREATE TABLE pedido_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pedido_id INT NOT NULL,
-    producto_id INT,
+    plato_id INT,
     combo_id INT,
     tipo ENUM('producto', 'combo') NOT NULL,
     nombre VARCHAR(100) NOT NULL COMMENT 'Snapshot del nombre para histÃ³rico',
@@ -208,11 +208,11 @@ CREATE TABLE pedido_items (
     notas TEXT,
     
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
-    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE SET NULL,
+    FOREIGN KEY (plato_id) REFERENCES platos(id) ON DELETE SET NULL,
     FOREIGN KEY (combo_id) REFERENCES combos(id) ON DELETE SET NULL,
     
     INDEX idx_pedido_items_pedido (pedido_id),
-    INDEX idx_pedido_items_producto (producto_id),
+    INDEX idx_pedido_items_producto (plato_id),
     INDEX idx_pedido_items_combo (combo_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -367,7 +367,7 @@ INSERT INTO categorias (nombre, descripcion, orden) VALUES
 ('Postres', 'Postres tradicionales', 7);
 
 -- Insertar productos
-INSERT INTO productos (categoria_id, nombre, descripcion, precio, disponible) VALUES
+INSERT INTO platos (categoria_id, nombre, descripcion, precio, disponible) VALUES
 -- Ceviches
 (1, 'Ceviche de Pescado', 'Ceviche clÃ¡sico de pescado fresco', 25.00, TRUE),
 (1, 'Ceviche Mixto', 'Ceviche con pescado, pulpo y calamares', 30.00, TRUE),
@@ -408,19 +408,19 @@ INSERT INTO combos (nombre, descripcion, precio, activo) VALUES
 ('Combo Familiar', 'Jalea familiar + 2 Inka Kola 1.5L', 85.00, TRUE),
 ('Combo Ejecutivo', 'Arroz con mariscos + Bebida + Postre', 38.00, TRUE);
 
--- Relacionar productos con combos
+-- Relacionar platos con combos
 -- Combo 1: Cevichero
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
 (1, 1, 1),  -- Ceviche de pescado
 (1, 12, 1); -- Chicha morada
 
 -- Combo 2: Familiar
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
 (2, 9, 1),  -- Jalea familiar
 (2, 13, 2); -- Inka Kola
 
 -- Combo 3: Ejecutivo
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
 (3, 10, 1), -- Arroz con mariscos
 (3, 15, 1), -- Limonada
 (3, 19, 1); -- Suspiro limeÃ±o
@@ -557,7 +557,7 @@ FROM ventas v
 JOIN metodos_pago mp ON v.metodo_pago_id = mp.id
 GROUP BY DATE(v.fecha_venta), mp.nombre;
 
--- Vista de productos mÃ¡s vendidos
+-- Vista de platos mÃ¡s vendidos
 CREATE VIEW v_productos_top AS
 SELECT 
     p.id,
@@ -566,9 +566,9 @@ SELECT
     COUNT(pi.id) AS veces_vendido,
     SUM(pi.cantidad) AS cantidad_total,
     SUM(pi.subtotal) AS ingresos_totales
-FROM productos p
+FROM platos p
 JOIN categorias c ON p.categoria_id = c.id
-JOIN pedido_items pi ON p.id = pi.producto_id
+JOIN pedido_items pi ON p.id = pi.plato_id
 JOIN pedidos ped ON pi.pedido_id = ped.id
 WHERE ped.estado != 'cancelado'
 GROUP BY p.id
@@ -655,7 +655,7 @@ SELECT 'Clientes:', COUNT(*) FROM clientes
 UNION ALL
 SELECT 'CategorÃ­as:', COUNT(*) FROM categorias
 UNION ALL
-SELECT 'Productos:', COUNT(*) FROM productos
+SELECT 'Platos:', COUNT(*) FROM platos
 UNION ALL
 SELECT 'Combos:', COUNT(*) FROM combos
 UNION ALL
@@ -716,7 +716,7 @@ SHOW TABLES;
 -- Verificar datos
 SELECT * FROM usuarios;
 SELECT * FROM categorias;
-SELECT * FROM productos LIMIT 5;
+SELECT * FROM platos LIMIT 5;
 ```
 
 ---

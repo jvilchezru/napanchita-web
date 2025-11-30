@@ -19,7 +19,7 @@ Sprint 3 ha sido completado exitosamente. Se implementó el **core del sistema**
 
 El mesero/admin puede:
 - Seleccionar mesa del restaurante
-- Agregar productos y combos al carrito
+- Agregar platos y combos al carrito
 - Ver subtotales y total en tiempo real
 - Agregar notas especiales al pedido
 - Guardar pedido y enviarlo a cocina
@@ -86,9 +86,9 @@ La cocina tiene:
 ```sql
 - id (PK)
 - pedido_id (FK)
-- producto_id (FK, nullable)
+- plato_id (FK, nullable)
 - combo_id (FK, nullable)
-- tipo (ENUM: producto, combo)
+- tipo (ENUM: plato, combo)
 - nombre (snapshot para histórico)
 - cantidad
 - precio_unitario
@@ -108,7 +108,7 @@ La cocina tiene:
 ## 🔧 FUNCIONALIDADES IMPLEMENTADAS
 
 ### Punto de Venta (POS)
-- ✅ Interfaz visual tipo cards para productos/combos
+- ✅ Interfaz visual tipo cards para platos/combos
 - ✅ Carrito dinámico con JavaScript
 - ✅ Cálculo automático de subtotales y total
 - ✅ Selección de tipo de pedido (mesa/delivery/para llevar)
@@ -182,8 +182,8 @@ napanchita-web/
 2. Ir a "Pedidos" → "Nuevo Pedido"
 3. Tipo: "Mesa"
 4. Seleccionar mesa (ej: Mesa 1)
-5. Agregar productos:
-   - Click en productos
+5. Agregar platos:
+   - Click en platos
    - Ajustar cantidades con +/-
 6. Verificar que el total se calcula automáticamente
 7. Agregar notas (opcional)
@@ -197,7 +197,7 @@ napanchita-web/
 3. Buscar cliente por teléfono:
    - Si existe: se autocompleta
    - Si no existe: crear cliente rápido (modal)
-4. Agregar productos al carrito
+4. Agregar platos al carrito
 5. Definir costo de envío (ej: S/ 5.00)
 6. Agregar descuento (opcional)
 7. Crear pedido

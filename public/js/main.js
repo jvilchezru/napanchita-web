@@ -29,12 +29,12 @@ const Utils = {
             month: '2-digit',
             day: '2-digit'
         };
-        
+
         if (includeTime) {
             options.hour = '2-digit';
             options.minute = '2-digit';
         }
-        
+
         return d.toLocaleDateString('es-PE', options);
     },
 
@@ -155,16 +155,16 @@ class AjaxHandler {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            Utils.error('Error en petición GET', error);
-            throw error;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                Utils.error('Error en petición GET', error);
+                throw error;
+            });
     }
 
     /**
@@ -179,16 +179,16 @@ class AjaxHandler {
             },
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            Utils.error('Error en petición POST', error);
-            throw error;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                Utils.error('Error en petición POST', error);
+                throw error;
+            });
     }
 
     /**
@@ -199,16 +199,16 @@ class AjaxHandler {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            Utils.error('Error en subida de archivo', error);
-            throw error;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                Utils.error('Error en subida de archivo', error);
+                throw error;
+            });
     }
 }
 
@@ -226,12 +226,12 @@ if (typeof $.fn.dataTable !== 'undefined') {
 }
 
 // Validación de formularios con Bootstrap
-(function() {
+(function () {
     'use strict';
-    
+
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     const forms = document.querySelectorAll('.needs-validation');
-    
+
     // Loop over them and prevent submission
     Array.from(forms).forEach(form => {
         form.addEventListener('submit', event => {
@@ -239,7 +239,7 @@ if (typeof $.fn.dataTable !== 'undefined') {
                 event.preventDefault();
                 event.stopPropagation();
             }
-            
+
             form.classList.add('was-validated');
         }, false);
     });
@@ -253,16 +253,16 @@ const AutoComplete = {
                 AjaxHandler.get(APP_CONFIG.baseUrl + 'index.php?action=clientes_buscar', {
                     q: request.term
                 })
-                .then(data => {
-                    response(data.map(cliente => ({
-                        label: `${cliente.nombre} - ${cliente.telefono}`,
-                        value: cliente.nombre,
-                        id: cliente.id_cliente
-                    })));
-                })
-                .catch(error => {
-                    response([]);
-                });
+                    .then(data => {
+                        response(data.map(cliente => ({
+                            label: `${cliente.nombre} - ${cliente.telefono}`,
+                            value: cliente.nombre,
+                            id: cliente.id_cliente
+                        })));
+                    })
+                    .catch(error => {
+                        response([]);
+                    });
             },
             minLength: 2,
             select: (event, ui) => {
@@ -271,23 +271,23 @@ const AutoComplete = {
         });
     },
 
-    productos: (inputElement, callback) => {
+    platos: (inputElement, callback) => {
         $(inputElement).autocomplete({
             source: (request, response) => {
-                AjaxHandler.get(APP_CONFIG.baseUrl + 'index.php?action=productos_buscar', {
+                AjaxHandler.get(APP_CONFIG.baseUrl + 'index.php?action=platos_buscar', {
                     q: request.term
                 })
-                .then(data => {
-                    response(data.map(producto => ({
-                        label: `${producto.nombre} - S/ ${producto.precio}`,
-                        value: producto.nombre,
-                        id: producto.id_producto,
-                        precio: producto.precio
-                    })));
-                })
-                .catch(error => {
-                    response([]);
-                });
+                    .then(data => {
+                        response(data.map(plato => ({
+                            label: `${plato.nombre} - S/ ${plato.precio}`,
+                            value: plato.nombre,
+                            id: plato.id_plato,
+                            precio: plato.precio
+                        })));
+                    })
+                    .catch(error => {
+                        response([]);
+                    });
             },
             minLength: 2,
             select: (event, ui) => {
@@ -331,7 +331,7 @@ class Cart {
 
     addItem(item) {
         const existingItem = this.items.find(i => i.id === item.id);
-        
+
         if (existingItem) {
             existingItem.cantidad += item.cantidad || 1;
         } else {
@@ -342,7 +342,7 @@ class Cart {
                 cantidad: item.cantidad || 1
             });
         }
-        
+
         this.calculate();
     }
 
@@ -367,7 +367,7 @@ class Cart {
         this.subtotal = this.items.reduce((sum, item) => {
             return sum + (item.precio * item.cantidad);
         }, 0);
-        
+
         this.total = this.subtotal - this.descuento;
     }
 
@@ -394,7 +394,7 @@ class SessionTimer {
         this.warningTime = 5 * 60 * 1000; // 5 minutos antes
         this.timerId = null;
         this.warningId = null;
-        
+
         this.start();
         this.setupActivityListeners();
     }
@@ -406,12 +406,12 @@ class SessionTimer {
     reset() {
         clearTimeout(this.timerId);
         clearTimeout(this.warningId);
-        
+
         // Advertencia 5 minutos antes
         this.warningId = setTimeout(() => {
             this.showWarning();
         }, this.timeout - this.warningTime);
-        
+
         // Timeout final
         this.timerId = setTimeout(() => {
             this.logout();
@@ -441,7 +441,7 @@ class SessionTimer {
 
     setupActivityListeners() {
         const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-        
+
         events.forEach(event => {
             document.addEventListener(event, () => {
                 this.reset();
@@ -451,28 +451,28 @@ class SessionTimer {
 }
 
 // Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     Utils.log('Sistema Napanchita iniciado');
-    
+
     // Iniciar timer de sesión si el usuario está autenticado
     if (document.body.classList.contains('logged-in')) {
         new SessionTimer(60); // 60 minutos
     }
-    
+
     // Tooltips de Bootstrap
     const tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
     );
-    tooltipTriggerList.map(function(tooltipTriggerEl) {
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-    
+
     // Confirmar links de eliminación
     document.querySelectorAll('a.confirm-delete').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const url = this.href;
-            
+
             Utils.confirm(
                 '¿Está seguro?',
                 'Esta acción no se puede deshacer',

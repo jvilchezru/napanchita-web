@@ -65,11 +65,11 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 
-    <!-- Productos Más Vendidos -->
+    <!-- Platos Más Vendidos -->
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <i class="fas fa-fire me-2"></i> Productos Top
+                <i class="fas fa-fire me-2"></i> Platos Top
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">

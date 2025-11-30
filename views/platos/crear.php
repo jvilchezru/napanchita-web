@@ -1,29 +1,25 @@
 <?php
-$pageTitle = 'Editar Producto';
+$pageTitle = 'Crear Producto';
 include __DIR__ . '/../layouts/header.php';
 ?>
 
 <style>
-    .imagen-preview,
-    .imagen-actual {
+    .imagen-preview {
         max-width: 200px;
         max-height: 200px;
         margin-top: 10px;
         border-radius: 5px;
-    }
-
-    .imagen-preview {
         display: none;
     }
 </style>
 
 <div class="page-header">
-    <h1><i class="fas fa-edit me-2"></i> Editar Producto</h1>
+    <h1><i class="fas fa-plus-circle me-2"></i> Crear Nuevo Plato</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=productos">Productos</a></li>
-            <li class="breadcrumb-item active">Editar</li>
+            <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=platos">Platos</a></li>
+            <li class="breadcrumb-item active">Crear</li>
         </ol>
     </nav>
 </div>
@@ -42,11 +38,10 @@ include __DIR__ . '/../layouts/header.php';
     <div class="col-md-8 offset-md-2">
         <div class="card">
             <div class="card-header">
-                <i class="fas fa-fish me-2"></i> Modificar Datos del Producto
+                <i class="fas fa-fish me-2"></i> Datos del Nuevo Plato
             </div>
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>index.php?action=productos_actualizar" method="POST" enctype="multipart/form-data" id="formEditarProducto">
-                    <input type="hidden" name="id" value="<?php echo $producto['id']; ?>">
+                <form action="<?php echo BASE_URL; ?>index.php?action=platos_guardar" method="POST" enctype="multipart/form-data" id="formCrearProducto">
 
                     <div class="mb-3">
                         <label for="categoria_id" class="form-label">
@@ -55,13 +50,12 @@ include __DIR__ . '/../layouts/header.php';
                         <select class="form-select" id="categoria_id" name="categoria_id" required>
                             <option value="">Seleccionar categoría...</option>
                             <?php foreach ($categorias as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>"
-                                    <?php echo $cat['id'] == $producto['categoria_id'] ? 'selected' : ''; ?>>
+                                <option value="<?php echo $cat['id']; ?>">
                                     <?php echo htmlspecialchars($cat['nombre']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <small class="form-text text-muted">Categoría del producto</small>
+                        <small class="form-text text-muted">Selecciona la categoría a la que pertenece el plato</small>
                     </div>
 
                     <div class="mb-3">
@@ -69,9 +63,8 @@ include __DIR__ . '/../layouts/header.php';
                             <i class="fas fa-utensils me-1"></i> Nombre <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control" id="nombre" name="nombre"
-                            value="<?php echo htmlspecialchars($producto['nombre']); ?>"
                             placeholder="Ej: Ceviche de pescado, Chicharrón de pota" required maxlength="100">
-                        <small class="form-text text-muted">Nombre del producto</small>
+                        <small class="form-text text-muted">Nombre del plato (máximo 100 caracteres)</small>
                     </div>
 
                     <div class="mb-3">
@@ -79,7 +72,8 @@ include __DIR__ . '/../layouts/header.php';
                             <i class="fas fa-align-left me-1"></i> Descripción
                         </label>
                         <textarea class="form-control" id="descripcion" name="descripcion"
-                            rows="3" placeholder="Descripción detallada del producto"><?php echo htmlspecialchars($producto['descripcion'] ?? ''); ?></textarea>
+                            rows="3" placeholder="Descripción detallada del plato"></textarea>
+                        <small class="form-text text-muted">Descripción opcional del plato</small>
                     </div>
 
                     <div class="mb-3">
@@ -87,44 +81,24 @@ include __DIR__ . '/../layouts/header.php';
                             <i class="fas fa-dollar-sign me-1"></i> Precio (S/) <span class="text-danger">*</span>
                         </label>
                         <input type="number" class="form-control" id="precio" name="precio"
-                            step="0.01" min="0.01" value="<?php echo $producto['precio']; ?>"
-                            placeholder="0.00" required>
-                        <small class="form-text text-muted">Precio del producto en soles</small>
+                            step="0.01" min="0.01" placeholder="0.00" required>
+                        <small class="form-text text-muted">Precio del plato en soles</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="imagen" class="form-label">
-                            <i class="fas fa-image me-1"></i> Imagen del Producto
+                            <i class="fas fa-image me-1"></i> Imagen del Plato
                         </label>
-
-                        <?php if (!empty($producto['imagen_url']) && file_exists($producto['imagen_url'])): ?>
-                            <div class="mb-2">
-                                <label class="form-label d-block"><strong>Imagen actual:</strong></label>
-                                <img src="<?php echo BASE_URL . $producto['imagen_url']; ?>"
-                                    alt="<?php echo htmlspecialchars($producto['nombre']); ?>"
-                                    class="imagen-actual">
-                            </div>
-                        <?php endif; ?>
-
                         <input type="file" class="form-control" id="imagen" name="imagen"
                             accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImagen(event)">
-                        <small class="form-text text-muted">
-                            <?php if (!empty($producto['imagen_url'])): ?>
-                                Sube una nueva imagen solo si deseas cambiar la actual.
-                            <?php endif; ?>
-                            Formatos permitidos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB
-                        </small>
+                        <small class="form-text text-muted">Formatos permitidos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB</small>
                         <img id="imagenPreview" class="imagen-preview" alt="Vista previa">
                     </div>
 
                     <div class="mb-3">
                         <div class="form-check">
                             <input type="hidden" name="disponible" value="0">
-                            <input class="form-check-input" type="checkbox" id="disponible" name="disponible" value="1"
-                                <?php
-                                $disponible = isset($producto['disponible']) ? (int)$producto['disponible'] : 0;
-                                echo ($disponible === 1) ? 'checked' : '';
-                                ?>>
+                            <input class="form-check-input" type="checkbox" id="disponible" name="disponible" value="1" checked>
                             <label class="form-check-label" for="disponible">
                                 <i class="fas fa-check-circle text-success me-1"></i> Producto disponible
                             </label>
@@ -137,14 +111,27 @@ include __DIR__ . '/../layouts/header.php';
                     <hr>
 
                     <div class="d-flex justify-content-between">
-                        <a href="<?php echo BASE_URL; ?>index.php?action=productos" class="btn btn-secondary">
+                        <a href="<?php echo BASE_URL; ?>index.php?action=platos" class="btn btn-secondary">
                             <i class="fas fa-times me-2"></i> Cancelar
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i> Actualizar Producto
+                            <i class="fas fa-save me-2"></i> Guardar Producto
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Ayuda -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="fas fa-info-circle me-2"></i> Consejos:</h6>
+                <ul class="mb-0">
+                    <li><strong>Categoría:</strong> Asegúrate de seleccionar la categoría correcta para organizar tu menú.</li>
+                    <li><strong>Imagen:</strong> Una buena imagen aumenta las ventas. Usa fotos claras y apetitosas.</li>
+                    <li><strong>Precio:</strong> Revisa que el precio sea correcto antes de guardar.</li>
+                    <li><strong>Disponibilidad:</strong> Marca como no disponible si el plato está temporalmente agotado.</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -182,7 +169,7 @@ $extraScripts = '
     }
 
     // Validación del formulario
-    document.getElementById("formEditarProducto").addEventListener("submit", function(e) {
+    document.getElementById("formCrearProducto").addEventListener("submit", function(e) {
         const nombre = document.getElementById("nombre").value.trim();
         const precio = parseFloat(document.getElementById("precio").value);
         const categoria = document.getElementById("categoria_id").value;

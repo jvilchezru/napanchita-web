@@ -82,7 +82,7 @@ class Categoria {
     + actualizarOrden(orden: array): boolean
 }
 
-class Producto {
+class Plato {
     + id: int
     + categoria_id: int
     + nombre: string
@@ -401,7 +401,7 @@ class ClienteController {
     + agregarDireccion(): void
 }
 
-class ProductoController {
+class PlatoController {
     - producto: Producto
     - categoria: Categoria
     --
@@ -545,7 +545,7 @@ Model <|-- CierreCaja
 Controller <|-- AuthController
 Controller <|-- UsuarioController
 Controller <|-- ClienteController
-Controller <|-- ProductoController
+Controller <|-- PlatoController
 Controller <|-- ComboController
 Controller <|-- PedidoController
 Controller <|-- MesaController
@@ -563,8 +563,8 @@ Controller <|-- ReporteController
 AuthController --> Usuario
 UsuarioController --> Usuario
 ClienteController --> Cliente
-ProductoController --> Producto
-ProductoController --> Categoria
+PlatoController --> Producto
+PlatoController --> Categoria
 ComboController --> Combo
 ComboController --> ComboProducto
 PedidoController --> Pedido
@@ -648,7 +648,7 @@ Cada modelo representa una tabla y encapsula la lógica de acceso a datos.
 
 ```php
 // Ejemplo uso de Active Record
-$producto = new Producto($db);
+$producto = new Plato($db);
 $producto->nombre = "Ceviche Mixto";
 $producto->precio = 25.00;
 $producto->categoria_id = 1;
@@ -669,11 +669,11 @@ Punto único de entrada que enruta todas las solicitudes.
 ### 4. **Dependency Injection**
 
 ```php
-class ProductoController {
+class PlatoController {
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
-        $this->producto = new Producto($this->db);
+        $this->producto = new Plato($this->db);
     }
 }
 ```

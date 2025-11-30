@@ -2,7 +2,7 @@
 
 /**
  * Controlador de Combos
- * Maneja el CRUD de combos con gestión de productos asociados
+ * Maneja el CRUD de combos con gestión de platos asociados
  * Sistema Napanchita
  */
 
@@ -10,13 +10,15 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/helpers.php';
 require_once __DIR__ . '/../models/Combo.php';
-require_once __DIR__ . '/../models/Producto.php';
+require_once __DIR__ . '/../models/Plato.php';
+require_once __DIR__ . '/../models/Categoria.php';
 
 class ComboController
 {
     private $db;
     private $combo;
-    private $producto;
+    private $plato;
+    private $categoria;
     private $upload_dir;
 
     public function __construct()
@@ -34,7 +36,8 @@ class ComboController
         $database = new Database();
         $this->db = $database->getConnection();
         $this->combo = new Combo($this->db);
-        $this->producto = new Producto($this->db);
+        $this->plato = new Plato($this->db);
+        $this->categoria = new Categoria($this->db);
         $this->upload_dir = __DIR__ . '/../public/images/combos/';
 
         // Crear directorio si no existe
@@ -57,7 +60,8 @@ class ComboController
      */
     public function crear()
     {
-        $productos = $this->producto->listar(); // Todos los productos
+        $platos = $this->plato->listar(); // Todos los platos
+        $categorias = $this->categoria->listar(true); // Solo categorías activas
         require_once __DIR__ . '/../views/combos/crear.php';
     }
 
@@ -77,7 +81,7 @@ class ComboController
         $precio = $_POST['precio'] ?? 0;
         // El campo oculto envía 0, el checkbox envía 1 si está marcado
         $activo = isset($_POST['activo']) ? (int)$_POST['activo'] : 0;
-        $productos_combo = $_POST['productos'] ?? [];
+        $platos_combo = $_POST['productos'] ?? [];
 
         if (empty($nombre) || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
@@ -85,7 +89,7 @@ class ComboController
             return;
         }
 
-        if (empty($productos_combo)) {
+        if (empty($platos_combo)) {
             set_flash_message('Debe agregar al menos un producto al combo', 'error');
             redirect('index.php?action=combos_crear');
             return;
@@ -116,11 +120,11 @@ class ComboController
         if ($this->combo->crear()) {
             $combo_id = $this->combo->id;
 
-            // Agregar productos al combo
+            // Agregar platos al combo
             $productos_agregados = true;
-            foreach ($productos_combo as $producto_id => $cantidad) {
+            foreach ($platos_combo as $plato_id => $cantidad) {
                 if ($cantidad > 0) {
-                    if (!$this->combo->agregarProducto($combo_id, $producto_id, $cantidad)) {
+                    if (!$this->combo->agregarProducto($combo_id, $plato_id, $cantidad)) {
                         $productos_agregados = false;
                         break;
                     }
@@ -134,7 +138,7 @@ class ComboController
                 // Si falla agregar productos, eliminar combo
                 $this->combo->id = $combo_id;
                 $this->combo->eliminar();
-                set_flash_message('Error al agregar productos al combo', 'error');
+                set_flash_message('Error al agregar platos al combo', 'error');
                 redirect('index.php?action=combos_crear');
             }
         } else {
@@ -169,7 +173,8 @@ class ComboController
             return;
         }
 
-        $productos = $this->producto->listar(); // Todos los productos
+        $platos = $this->plato->listar(); // Todos los platos
+        $categorias = $this->categoria->listar(true); // Solo categorías activas
         require_once __DIR__ . '/../views/combos/editar.php';
     }
 
@@ -189,7 +194,7 @@ class ComboController
         $precio = $_POST['precio'] ?? 0;
         // El campo oculto envía 0, el checkbox envía 1 si está marcado
         $activo = isset($_POST['activo']) ? (int)$_POST['activo'] : 0;
-        $productos_combo = $_POST['productos'] ?? [];
+        $platos_combo = $_POST['productos'] ?? [];
 
         if (!$id || empty($nombre) || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
@@ -197,7 +202,7 @@ class ComboController
             return;
         }
 
-        if (empty($productos_combo)) {
+        if (empty($platos_combo)) {
             set_flash_message('Debe agregar al menos un producto al combo', 'error');
             redirect('index.php?action=combos_editar&id=' . $id);
             return;
@@ -242,12 +247,12 @@ class ComboController
 
         // Actualizar combo
         if ($this->combo->actualizar()) {
-            // Actualizar productos del combo
-            if ($this->combo->actualizarProductos($id, $productos_combo)) {
+            // Actualizar platos del combo
+            if ($this->combo->actualizarPlatos($id, $platos_combo)) {
                 set_flash_message('Combo actualizado exitosamente', 'success');
                 redirect('index.php?action=combos');
             } else {
-                set_flash_message('Error al actualizar productos del combo', 'error');
+                set_flash_message('Error al actualizar platos del combo', 'error');
                 redirect('index.php?action=combos_editar&id=' . $id);
             }
         } else {
@@ -317,7 +322,7 @@ class ComboController
             return;
         }
 
-        // Eliminar (los productos se eliminan automáticamente por CASCADE)
+        // Eliminar (los platos se eliminan automáticamente por CASCADE)
         if ($this->combo->eliminar()) {
             echo json_encode([
                 'success' => true,

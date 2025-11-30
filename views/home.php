@@ -138,7 +138,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h3>Reportes y Estadísticas</h3>
-                    <p>Análisis de ventas, productos más vendidos y rendimiento del negocio</p>
+                    <p>Análisis de ventas, platos más vendidos y rendimiento del negocio</p>
                 </div>
             </div>
 
@@ -157,8 +157,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-box-open"></i>
                     </div>
-                    <h3>Productos y Combos</h3>
-                    <p>Catálogo digital de productos, categorías y combos promocionales</p>
+                    <h3>Platos y Combos</h3>
+                    <p>Catálogo digital de platos, categorías y combos promocionales</p>
                 </div>
             </div>
         </div>

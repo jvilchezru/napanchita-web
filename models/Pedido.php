@@ -84,13 +84,13 @@ class Pedido
     public function agregarItem($item)
     {
         $query = "INSERT INTO " . $this->table_items . " 
-                  (pedido_id, producto_id, combo_id, tipo, nombre, cantidad, precio_unitario, subtotal, notas) 
-                  VALUES (:pedido_id, :producto_id, :combo_id, :tipo, :nombre, :cantidad, :precio_unitario, :subtotal, :notas)";
+                  (pedido_id, plato_id, combo_id, tipo, nombre, cantidad, precio_unitario, subtotal, notas) 
+                  VALUES (:pedido_id, :plato_id, :combo_id, :tipo, :nombre, :cantidad, :precio_unitario, :subtotal, :notas)";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":pedido_id", $this->id, PDO::PARAM_INT);
-        $stmt->bindParam(":producto_id", $item['producto_id'], PDO::PARAM_INT);
+        $stmt->bindParam(":plato_id", $item['plato_id'], PDO::PARAM_INT);
         $stmt->bindParam(":combo_id", $item['combo_id'], PDO::PARAM_INT);
         $stmt->bindParam(":tipo", $item['tipo']);
         $stmt->bindParam(":nombre", $item['nombre']);

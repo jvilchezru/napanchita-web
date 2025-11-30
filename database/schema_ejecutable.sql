@@ -5,9 +5,9 @@ USE napanchita_db;
 CREATE TABLE usuarios (
 CREATE TABLE clientes (
 CREATE TABLE categorias (
-CREATE TABLE productos (
+CREATE TABLE platos (
 CREATE TABLE combos (
-CREATE TABLE combo_productos (
+CREATE TABLE combo_platos (
 CREATE TABLE mesas (
 CREATE TABLE reservas (
 CREATE TABLE pedidos (
@@ -20,12 +20,12 @@ CREATE TABLE cierres_caja (
 CREATE TABLE logs (
 INSERT INTO usuarios (nombre, email, password, telefono, rol) VALUES
 INSERT INTO categorias (nombre, descripcion, orden) VALUES
-INSERT INTO productos (categoria_id, nombre, descripcion, precio, disponible) 
+INSERT INTO platos (categoria_id, nombre, descripcion, precio, disponible) 
 VALUES
 INSERT INTO combos (nombre, descripcion, precio, activo) VALUES
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
-INSERT INTO combo_productos (combo_id, producto_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
+INSERT INTO combo_productos (combo_id, plato_id, cantidad) VALUES
 INSERT INTO mesas (numero, capacidad, estado, posicion_x, posicion_y) VALUES
 INSERT INTO zonas_delivery (nombre, descripcion, costo_envio, tiempo_estimado) 
 VALUES
@@ -56,7 +56,7 @@ SHOW TABLES;
 SELECT 'Usuarios:' AS Tabla, COUNT(*) AS Registros FROM usuarios
 SELECT 'Clientes:', COUNT(*) FROM clientes
 SELECT 'CategorÃ­as:', COUNT(*) FROM categorias
-SELECT 'Productos:', COUNT(*) FROM productos
+SELECT 'Platos:', COUNT(*) FROM platos
 SELECT 'Combos:', COUNT(*) FROM combos
 SELECT 'Mesas:', COUNT(*) FROM mesas
 SELECT 'Zonas Delivery:', COUNT(*) FROM zonas_delivery
@@ -66,6 +66,6 @@ USE napanchita_db;
 SHOW TABLES;
 SELECT * FROM usuarios;
 SELECT * FROM categorias;
-SELECT * FROM productos LIMIT 5;
+SELECT * FROM platos LIMIT 5;
 
 

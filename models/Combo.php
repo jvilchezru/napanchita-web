@@ -9,7 +9,7 @@ class Combo
 {
     private $conn;
     private $table = "combos";
-    private $table_productos = "combo_productos";
+    private $table_platos = "combo_platos";
 
     // Propiedades del combo
     public $id;
@@ -67,7 +67,7 @@ class Combo
 
     /**
      * Obtener combo por ID con sus productos
-     * @return array|false Array con datos del combo y productos o false
+     * @return array|false Array con datos del combo y platos o false
      */
     public function obtenerPorId()
     {
@@ -80,23 +80,23 @@ class Combo
         $combo = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($combo) {
-            // Obtener productos del combo
-            $combo['productos'] = $this->obtenerProductosDelCombo($this->id);
+            // Obtener platos del combo
+            $combo['platos'] = $this->obtenerPlatosDelCombo($this->id);
         }
 
         return $combo;
     }
 
     /**
-     * Obtener productos de un combo
+     * Obtener platos de un combo
      * @param int $combo_id ID del combo
-     * @return array Array de productos con cantidad
+     * @return array Array de platos con cantidad
      */
-    public function obtenerProductosDelCombo($combo_id)
+    public function obtenerPlatosDelCombo($combo_id)
     {
         $query = "SELECT cp.*, p.nombre, p.descripcion, p.precio as precio_unitario, p.imagen_url
-                  FROM " . $this->table_productos . " cp
-                  INNER JOIN productos p ON cp.producto_id = p.id
+                  FROM " . $this->table_platos . " cp
+                  INNER JOIN platos p ON cp.plato_id = p.id
                   WHERE cp.combo_id = :combo_id
                   ORDER BY p.nombre ASC";
 
@@ -127,10 +127,10 @@ class Combo
 
         $combos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Agregar productos a cada combo
+        // Agregar platos a cada combo
         foreach ($combos as &$combo) {
-            $combo['productos'] = $this->obtenerProductosDelCombo($combo['id']);
-            $combo['cantidad_productos'] = count($combo['productos']);
+            $combo['platos'] = $this->obtenerPlatosDelCombo($combo['id']);
+            $combo['cantidad_platos'] = count($combo['platos']);
         }
 
         return $combos;
@@ -208,7 +208,7 @@ class Combo
             unlink($this->imagen_url);
         }
 
-        // Los productos del combo se eliminan automáticamente por CASCADE
+        // Los platos del combo se eliminan automáticamente por CASCADE
         $query = "DELETE FROM " . $this->table . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
@@ -224,20 +224,20 @@ class Combo
     /**
      * Agregar producto a combo
      * @param int $combo_id ID del combo
-     * @param int $producto_id ID del producto
+     * @param int $plato_id ID del producto
      * @param int $cantidad Cantidad del producto
      * @return boolean True si se agregó correctamente
      */
-    public function agregarProducto($combo_id, $producto_id, $cantidad = 1)
+    public function agregarProducto($combo_id, $plato_id, $cantidad = 1)
     {
-        $query = "INSERT INTO " . $this->table_productos . " 
-                  (combo_id, producto_id, cantidad) 
-                  VALUES (:combo_id, :producto_id, :cantidad)
+        $query = "INSERT INTO " . $this->table_platos . " 
+                  (combo_id, plato_id, cantidad) 
+                  VALUES (:combo_id, :plato_id, :cantidad)
                   ON DUPLICATE KEY UPDATE cantidad = :cantidad2";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":combo_id", $combo_id, PDO::PARAM_INT);
-        $stmt->bindParam(":producto_id", $producto_id, PDO::PARAM_INT);
+        $stmt->bindParam(":plato_id", $plato_id, PDO::PARAM_INT);
         $stmt->bindParam(":cantidad", $cantidad, PDO::PARAM_INT);
         $stmt->bindParam(":cantidad2", $cantidad, PDO::PARAM_INT);
 
@@ -252,17 +252,17 @@ class Combo
     /**
      * Eliminar producto de combo
      * @param int $combo_id ID del combo
-     * @param int $producto_id ID del producto
+     * @param int $plato_id ID del producto
      * @return boolean True si se eliminó correctamente
      */
-    public function eliminarProducto($combo_id, $producto_id)
+    public function eliminarProducto($combo_id, $plato_id)
     {
-        $query = "DELETE FROM " . $this->table_productos . " 
-                  WHERE combo_id = :combo_id AND producto_id = :producto_id";
+        $query = "DELETE FROM " . $this->table_platos . " 
+                  WHERE combo_id = :combo_id AND plato_id = :plato_id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":combo_id", $combo_id, PDO::PARAM_INT);
-        $stmt->bindParam(":producto_id", $producto_id, PDO::PARAM_INT);
+        $stmt->bindParam(":plato_id", $plato_id, PDO::PARAM_INT);
 
         try {
             return $stmt->execute();
@@ -273,32 +273,32 @@ class Combo
     }
 
     /**
-     * Actualizar productos del combo (eliminar todos y agregar nuevos)
+     * Actualizar platos del combo (eliminar todos y agregar nuevos)
      * @param int $combo_id ID del combo
-     * @param array $productos Array de productos con formato ['producto_id' => cantidad]
+     * @param array $platos Array de platos con formato ['plato_id' => cantidad]
      * @return boolean True si se actualizó correctamente
      */
-    public function actualizarProductos($combo_id, $productos)
+    public function actualizarPlatos($combo_id, $platos)
     {
         try {
             // Iniciar transacción
             $this->conn->beginTransaction();
 
-            // Eliminar todos los productos actuales del combo
-            $query = "DELETE FROM " . $this->table_productos . " WHERE combo_id = :combo_id";
+            // Eliminar todos los platos actuales del combo
+            $query = "DELETE FROM " . $this->table_platos . " WHERE combo_id = :combo_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":combo_id", $combo_id, PDO::PARAM_INT);
             $stmt->execute();
 
-            // Agregar nuevos productos
-            $query = "INSERT INTO " . $this->table_productos . " 
-                      (combo_id, producto_id, cantidad) 
-                      VALUES (:combo_id, :producto_id, :cantidad)";
+            // Agregar nuevos platos
+            $query = "INSERT INTO " . $this->table_platos . " 
+                      (combo_id, plato_id, cantidad) 
+                      VALUES (:combo_id, :plato_id, :cantidad)";
             $stmt = $this->conn->prepare($query);
 
-            foreach ($productos as $producto_id => $cantidad) {
+            foreach ($platos as $plato_id => $cantidad) {
                 $stmt->bindParam(":combo_id", $combo_id, PDO::PARAM_INT);
-                $stmt->bindParam(":producto_id", $producto_id, PDO::PARAM_INT);
+                $stmt->bindParam(":plato_id", $plato_id, PDO::PARAM_INT);
                 $stmt->bindParam(":cantidad", $cantidad, PDO::PARAM_INT);
                 $stmt->execute();
             }
@@ -309,7 +309,7 @@ class Combo
         } catch (PDOException $e) {
             // Revertir transacción en caso de error
             $this->conn->rollBack();
-            error_log("Error al actualizar productos del combo: " . $e->getMessage());
+            error_log("Error al actualizar platos del combo: " . $e->getMessage());
             return false;
         }
     }
@@ -333,10 +333,10 @@ class Combo
 
         $combos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Agregar productos a cada combo
+        // Agregar platos a cada combo
         foreach ($combos as &$combo) {
-            $combo['productos'] = $this->obtenerProductosDelCombo($combo['id']);
-            $combo['cantidad_productos'] = count($combo['productos']);
+            $combo['platos'] = $this->obtenerPlatosDelCombo($combo['id']);
+            $combo['cantidad_platos'] = count($combo['platos']);
         }
 
         return $combos;
@@ -363,7 +363,7 @@ class Combo
      */
     public function tieneProductos($combo_id)
     {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table_productos . " 
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_platos . " 
                   WHERE combo_id = :combo_id";
 
         $stmt = $this->conn->prepare($query);

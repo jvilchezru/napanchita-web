@@ -1,4 +1,4 @@
-# SPRINT 2 - PRODUCTOS Y CATEGORÍAS ✅ COMPLETADO
+# SPRINT 2 - PLATOS Y CATEGORÍAS ✅ COMPLETADO
 
 **Fecha de Completado:** 29 de Noviembre, 2025  
 **Estado:** COMPLETADO  
@@ -8,7 +8,7 @@
 
 ## 📋 RESUMEN
 
-Sprint 2 ha sido completado exitosamente. Se implementó el sistema completo de gestión de productos, categorías y combos, permitiendo al administrador organizar y mantener el catálogo de la cevichería.
+Sprint 2 ha sido completado exitosamente. Se implementó el sistema completo de gestión de platos, categorías y combos, permitiendo al administrador organizar y mantener el catálogo de la cevichería.
 
 ---
 
@@ -21,45 +21,45 @@ El administrador puede:
 - Crear nuevas categorías (Ceviches, Chicharrones, Jaleas, etc.)
 - Editar categorías existentes
 - Activar/desactivar categorías
-- Eliminar categorías (solo si no tienen productos)
+- Eliminar categorías (solo si no tienen platos)
 - Ordenar categorías de forma personalizada
-- Ver cantidad de productos por categoría
+- Ver cantidad de platos por categoría
 
 **Archivos:**
 - Controller: `controllers/CategoriaController.php`
 - Model: `models/Categoria.php`
 - Views: `views/categorias/index.php`, `crear.php`, `editar.php`
 
-### US-005: Gestión de Productos
+### US-005: Gestión de Platos
 **Estado:** ✅ Completado
 
 El administrador puede:
-- Crear productos con nombre, descripción, precio e imagen
-- Asignar productos a categorías
-- Subir y gestionar imágenes de productos
-- Editar productos existentes
-- Marcar productos como disponible/no disponible
-- Eliminar productos
-- Filtrar productos por categoría
-- Búsqueda de productos
+- Crear platos con nombre, descripción, precio e imagen
+- Asignar platos a categorías
+- Subir y gestionar imágenes de platos
+- Editar platos existentes
+- Marcar platos como disponible/no disponible
+- Eliminar platos
+- Filtrar platos por categoría
+- Búsqueda de platos
 
 **Archivos:**
-- Controller: `controllers/ProductoController.php`
-- Model: `models/Producto.php`
-- Views: `views/productos/index.php`, `crear.php`, `editar.php`
-- Upload Directory: `public/images/productos/`
+- Controller: `controllers/PlatoController.php`
+- Model: `models/Plato.php`
+- Views: `views/platos/index.php`, `crear.php`, `editar.php`
+- Upload Directory: `public/images/platos/`
 
 ### US-006: Sistema de Combos
 **Estado:** ✅ Completado
 
 El administrador puede:
 - Crear combos con nombre, descripción y precio especial
-- Agregar múltiples productos a un combo con cantidades
+- Agregar múltiples platos a un combo con cantidades
 - Subir imágenes de combos
 - Activar/desactivar combos
-- Editar combos y sus productos
+- Editar combos y sus platos
 - Eliminar combos
-- Ver productos incluidos en cada combo
+- Ver platos incluidos en cada combo
 
 **Archivos:**
 - Controller: `controllers/ComboController.php`
@@ -82,7 +82,7 @@ El administrador puede:
 - activo (boolean)
 ```
 
-**2. productos**
+**2. platos**
 ```sql
 - id (PK)
 - categoria_id (FK)
@@ -105,13 +105,13 @@ El administrador puede:
 - fecha_creacion
 ```
 
-**4. combo_productos** (tabla de relación N:M)
+**4. combo_platos** (tabla de relación N:M)
 ```sql
 - id (PK)
 - combo_id (FK)
-- producto_id (FK)
+- plato_id (FK)
 - cantidad (INT)
-- UNIQUE(combo_id, producto_id)
+- UNIQUE(combo_id, plato_id)
 ```
 
 ---
@@ -131,7 +131,7 @@ El administrador puede:
 - ✅ Validación de nombres únicos en categorías
 - ✅ Validación de precios (deben ser > 0)
 - ✅ Sanitización de inputs (XSS protection)
-- ✅ Validación de relaciones (no eliminar categorías con productos)
+- ✅ Validación de relaciones (no eliminar categorías con platos)
 
 ### Interfaz de Usuario
 - ✅ DataTables con búsqueda y paginación
@@ -158,18 +158,18 @@ El administrador puede:
 napanchita-web/
 ├── controllers/
 │   ├── CategoriaController.php ✅
-│   ├── ProductoController.php ✅
+│   ├── PlatoController.php ✅
 │   └── ComboController.php ✅
 ├── models/
 │   ├── Categoria.php ✅
-│   ├── Producto.php ✅
+│   ├── Plato.php ✅
 │   └── Combo.php ✅
 ├── views/
 │   ├── categorias/
 │   │   ├── index.php ✅
 │   │   ├── crear.php ✅
 │   │   └── editar.php ✅
-│   ├── productos/
+│   ├── platos/
 │   │   ├── index.php ✅
 │   │   ├── crear.php ✅
 │   │   └── editar.php ✅
@@ -179,7 +179,7 @@ napanchita-web/
 │       └── editar.php ✅
 ├── public/
 │   └── images/
-│       ├── productos/ (directorio de imágenes)
+│       ├── platos/ (directorio de imágenes)
 │       └── combos/ (directorio de imágenes)
 └── database/
     └── schema_completo.sql ✅
@@ -214,13 +214,13 @@ napanchita-web/
 **Eliminar:**
 1. Click en botón eliminar (ícono basura)
 2. Confirmar en SweetAlert
-3. ✅ Verificar eliminación (solo si no tiene productos)
+3. ✅ Verificar eliminación (solo si no tiene platos)
 
-### 2. Gestión de Productos
+### 2. Gestión de Platos
 
-**Crear Producto:**
-1. Ir a "Productos"
-2. Click en "Nuevo Producto"
+**Crear Plato:**
+1. Ir a "Platos"
+2. Click en "Nuevo Plato"
 3. Seleccionar categoría
 4. Llenar: Nombre, Descripción, Precio
 5. Subir imagen (opcional)
@@ -228,7 +228,7 @@ napanchita-web/
 7. Guardar
 8. ✅ Verificar que aparece en la lista con su imagen
 
-**Editar Producto:**
+**Editar Plato:**
 1. Click en editar
 2. Modificar campos
 3. Cambiar imagen (opcional)
@@ -237,7 +237,7 @@ napanchita-web/
 
 **Filtrar por Categoría:**
 1. Usar el dropdown de "Filtrar por Categoría"
-2. ✅ Verificar que solo aparecen productos de esa categoría
+2. ✅ Verificar que solo aparecen platos de esa categoría
 
 **Cambiar Disponibilidad:**
 1. Click en botón de disponibilidad
@@ -250,25 +250,25 @@ napanchita-web/
 2. Click en "Nuevo Combo"
 3. Llenar: Nombre, Descripción, Precio
 4. Subir imagen (opcional)
-5. Agregar productos:
-   - Seleccionar producto del dropdown
+5. Agregar platos:
+   - Seleccionar plato del dropdown
    - Especificar cantidad
-   - Click en "Agregar Producto"
-6. Repetir para múltiples productos
+   - Click en "Agregar Plato"
+6. Repetir para múltiples platos
 7. Marcar como "Activo"
 8. Guardar
-9. ✅ Verificar que aparece con lista de productos
+9. ✅ Verificar que aparece con lista de platos
 
 **Editar Combo:**
 1. Click en editar combo
 2. Modificar datos
-3. Agregar/eliminar productos
+3. Agregar/eliminar platos
 4. Guardar
 5. ✅ Verificar cambios
 
-**Ver Productos del Combo:**
+**Ver Platos del Combo:**
 1. En la lista de combos
-2. ✅ Verificar que se muestra la lista de productos incluidos
+2. ✅ Verificar que se muestra la lista de platos incluidos
 
 ---
 
@@ -279,10 +279,10 @@ napanchita-web/
 - **Crear:** `http://localhost/napanchita-web/index.php?action=categorias_crear`
 - **Editar:** `http://localhost/napanchita-web/index.php?action=categorias_editar&id=X`
 
-### Productos
-- **Listado:** `http://localhost/napanchita-web/index.php?action=productos`
-- **Crear:** `http://localhost/napanchita-web/index.php?action=productos_crear`
-- **Editar:** `http://localhost/napanchita-web/index.php?action=productos_editar&id=X`
+### Platos
+- **Listado:** `http://localhost/napanchita-web/index.php?action=platos`
+- **Crear:** `http://localhost/napanchita-web/index.php?action=platos_crear`
+- **Editar:** `http://localhost/napanchita-web/index.php?action=platos_editar&id=X`
 
 ### Combos
 - **Listado:** `http://localhost/napanchita-web/index.php?action=combos`
@@ -295,7 +295,7 @@ napanchita-web/
 
 La base de datos ya incluye:
 - ✅ 7 categorías pre-cargadas
-- ✅ 20 productos de ejemplo
+- ✅ 20 platos de ejemplo
 - ✅ 3 combos de ejemplo
 
 Puedes probar con estos datos o crear nuevos.
@@ -308,10 +308,10 @@ Todos los archivos PHP han sido verificados sin errores de sintaxis:
 
 ```bash
 ✅ controllers/CategoriaController.php - No syntax errors
-✅ controllers/ProductoController.php - No syntax errors
+✅ controllers/PlatoController.php - No syntax errors
 ✅ controllers/ComboController.php - No syntax errors
 ✅ models/Categoria.php - No syntax errors
-✅ models/Producto.php - No syntax errors
+✅ models/Plato.php - No syntax errors
 ✅ models/Combo.php - No syntax errors
 ```
 
@@ -325,7 +325,7 @@ Todos los archivos PHP han sido verificados sin errores de sintaxis:
 - Implementar sistema de pedidos multi-canal (mesa, delivery, para llevar)
 - Crear interfaz POS para tomar pedidos
 - Desarrollar vista de cocina para seguimiento
-- Integrar productos y combos en pedidos
+- Integrar platos y combos en pedidos
 
 **Módulos a desarrollar:**
 - PedidoController
@@ -350,7 +350,7 @@ Todos los archivos PHP han sido verificados sin errores de sintaxis:
    - Rol: admin
 
 3. **Permisos de carpetas:**
-   - Verificar que `public/images/productos/` tiene permisos de escritura
+   - Verificar que `public/images/platos/` tiene permisos de escritura
    - Verificar que `public/images/combos/` tiene permisos de escritura
 
 4. **Navegadores recomendados:**
@@ -360,13 +360,13 @@ Todos los archivos PHP han sido verificados sin errores de sintaxis:
 ### Posibles Mejoras Futuras (Backlog)
 
 - [ ] Drag & drop para ordenar categorías
-- [ ] Importación masiva de productos (CSV/Excel)
-- [ ] Múltiples imágenes por producto (galería)
-- [ ] Etiquetas/tags para productos
+- [ ] Importación masiva de platos (CSV/Excel)
+- [ ] Múltiples imágenes por plato (galería)
+- [ ] Etiquetas/tags para platos
 - [ ] Control de stock/inventario
-- [ ] Productos con variantes (tamaños)
+- [ ] Platos con variantes (tamaños)
 - [ ] Descuentos por tiempo limitado
-- [ ] Recomendaciones de productos relacionados
+- [ ] Recomendaciones de platos relacionados
 
 ---
 

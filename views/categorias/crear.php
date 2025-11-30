@@ -66,7 +66,7 @@ include __DIR__ . '/../layouts/header.php';
                                 <i class="fas fa-check-circle text-success me-1"></i> Categoría activa
                             </label>
                             <small class="form-text text-muted d-block">
-                                Si está desactivada, no aparecerá en el menú de productos
+                                Si está desactivada, no aparecerá en el menú de platos
                             </small>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ include __DIR__ . '/../layouts/header.php';
                 <ul class="mb-0">
                     <li><strong>Nombre único:</strong> Cada categoría debe tener un nombre diferente.</li>
                     <li><strong>Orden:</strong> Define en qué posición aparecerá en el menú. Un valor de 0 se colocará automáticamente al final.</li>
-                    <li><strong>Estado activo:</strong> Solo las categorías activas aparecerán disponibles para asignar productos.</li>
+                    <li><strong>Estado activo:</strong> Solo las categorías activas aparecerán disponibles para asignar platos.</li>
                 </ul>
             </div>
         </div>

@@ -170,7 +170,7 @@ include __DIR__ . '/../layouts/header.php';
             <div class="card-body">
                 <h6><i class="fas fa-info-circle me-2"></i> Información sobre Roles:</h6>
                 <ul class="mb-0">
-                    <li><strong>Administrador:</strong> Acceso completo al sistema, puede gestionar usuarios, productos, reportes, etc.</li>
+                    <li><strong>Administrador:</strong> Acceso completo al sistema, puede gestionar usuarios, platos, reportes, etc.</li>
                     <li><strong>Mesero:</strong> Puede gestionar pedidos, mesas y reservas. No tiene acceso a configuración ni reportes.</li>
                     <li><strong>Repartidor:</strong> Solo puede ver y actualizar el estado de sus entregas asignadas.</li>
                 </ul>

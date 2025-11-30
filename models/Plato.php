@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Modelo Producto
- * Gestiona las operaciones CRUD de productos
+ * Modelo Plato
+ * Gestiona las operaciones CRUD de platos
  * Sistema Napanchita
  */
-class Producto
+class Plato
 {
     private $conn;
-    private $table = "productos";
+    private $table = "platos";
 
-    // Propiedades del producto
+    // Propiedades del plato
     public $id;
     public $categoria_id;
     public $nombre;
@@ -30,7 +30,7 @@ class Producto
     }
 
     /**
-     * Crear nuevo producto
+     * Crear nuevo plato
      * @return boolean True si se creó correctamente
      */
     public function crear()
@@ -61,14 +61,14 @@ class Producto
             }
             return false;
         } catch (PDOException $e) {
-            error_log("Error al crear producto: " . $e->getMessage());
+            error_log("Error al crear plato: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Obtener producto por ID
-     * @return array|false Array con datos del producto o false
+     * Obtener plato por ID
+     * @return array|false Array con datos del plato o false
      */
     public function obtenerPorId()
     {
@@ -85,9 +85,9 @@ class Producto
     }
 
     /**
-     * Listar todos los productos
-     * @param bool $solo_disponibles Si es true, solo devuelve productos disponibles
-     * @return array Array de productos
+     * Listar todos los platos
+     * @param bool $solo_disponibles Si es true, solo devuelve platos disponibles
+     * @return array Array de platos
      */
     public function listar($solo_disponibles = false)
     {
@@ -108,10 +108,10 @@ class Producto
     }
 
     /**
-     * Listar productos por categoría
+     * Listar platos por categoría
      * @param int $categoria_id ID de la categoría
-     * @param bool $solo_disponibles Si es true, solo devuelve productos disponibles
-     * @return array Array de productos
+     * @param bool $solo_disponibles Si es true, solo devuelve platos disponibles
+     * @return array Array de platos
      */
     public function listarPorCategoria($categoria_id, $solo_disponibles = false)
     {
@@ -134,7 +134,7 @@ class Producto
     }
 
     /**
-     * Actualizar producto
+     * Actualizar plato
      * @return boolean True si se actualizó correctamente
      */
     public function actualizar()
@@ -167,14 +167,14 @@ class Producto
         try {
             return $stmt->execute();
         } catch (PDOException $e) {
-            error_log("Error al actualizar producto: " . $e->getMessage());
+            error_log("Error al actualizar plato: " . $e->getMessage());
             return false;
         }
     }
 
     /**
      * Cambiar estado (disponible/no disponible)
-     * @param int $id ID del producto
+     * @param int $id ID del plato
      * @param boolean $estado Nuevo estado
      * @return boolean True si se cambió correctamente
      */
@@ -191,13 +191,13 @@ class Producto
         try {
             return $stmt->execute();
         } catch (PDOException $e) {
-            error_log("Error al cambiar estado de producto: " . $e->getMessage());
+            error_log("Error al cambiar estado de plato: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Eliminar producto (DELETE real)
+     * Eliminar plato (DELETE real)
      * @return boolean True si se eliminó correctamente
      */
     public function eliminar()
@@ -214,15 +214,15 @@ class Producto
         try {
             return $stmt->execute();
         } catch (PDOException $e) {
-            error_log("Error al eliminar producto: " . $e->getMessage());
+            error_log("Error al eliminar plato: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Buscar productos
+     * Buscar platos
      * @param string $termino Término de búsqueda
-     * @return array Array de productos
+     * @return array Array de platos
      */
     public function buscar($termino)
     {
@@ -243,8 +243,8 @@ class Producto
     }
 
     /**
-     * Contar productos totales
-     * @return int Cantidad de productos
+     * Contar platos totales
+     * @return int Cantidad de platos
      */
     public function contar()
     {
@@ -257,9 +257,9 @@ class Producto
     }
 
     /**
-     * Obtener productos más vendidos
-     * @param int $limit Cantidad de productos a devolver
-     * @return array Array de productos
+     * Obtener platos más vendidos
+     * @param int $limit Cantidad de platos a devolver
+     * @return array Array de platos
      */
     public function obtenerMasVendidos($limit = 10)
     {
@@ -268,7 +268,7 @@ class Producto
                   SUM(pi.cantidad) as cantidad_total
                   FROM " . $this->table . " p
                   LEFT JOIN categorias c ON p.categoria_id = c.id
-                  LEFT JOIN pedido_items pi ON p.id = pi.producto_id
+                  LEFT JOIN pedido_items pi ON p.id = pi.plato_id
                   LEFT JOIN pedidos ped ON pi.pedido_id = ped.id
                   WHERE ped.estado != 'cancelado' OR ped.id IS NULL
                   GROUP BY p.id

@@ -63,7 +63,7 @@ include __DIR__ . '/../layouts/header.php';
                         <th>Descripción</th>
                         <th>Orden</th>
                         <th>Estado</th>
-                        <th>Productos</th>
+                        <th>Platos</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -79,7 +79,7 @@ include __DIR__ . '/../layouts/header.php';
                                     <?php echo ($cat['activo'] ?? 1) ? 'Activa' : 'Inactiva'; ?>
                                 </span>
                             </td>
-                            <td><?php echo $cat['cantidad_productos'] ?? 0; ?></td>
+                            <td><?php echo $cat['cantidad_platos'] ?? 0; ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <a href="<?php echo BASE_URL; ?>index.php?action=categorias_editar&id=<?php echo $cat['id']; ?>"

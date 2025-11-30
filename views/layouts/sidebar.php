@@ -36,8 +36,8 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=productos" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'producto') !== false) ? 'active' : ''; ?>">
-                    <i class="fas fa-fish"></i> Productos
+                <a href="<?php echo BASE_URL; ?>index.php?action=platos" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'plato') !== false) ? 'active' : ''; ?>">
+                    <i class="fas fa-fish"></i> Platos
                 </a>
             </li>
 
@@ -53,11 +53,13 @@
                 </a>
             </li>
 
+            <?php /* TEMPORALMENTE OCULTO
             <li>
                 <a href="<?php echo BASE_URL; ?>index.php?action=zonas_delivery">
                     <i class="fas fa-map-marked-alt"></i> Zonas de Delivery
                 </a>
             </li>
+            */ ?>
 
             <li>
                 <a href="<?php echo BASE_URL; ?>index.php?action=metodos_pago">
@@ -85,6 +87,7 @@
             </li>
         <?php endif; ?>
 
+        <?php /* TEMPORALMENTE OCULTO - MÓDULO DELIVERY
         <!-- Delivery (Admin y Repartidor) -->
         <?php if (has_role([ROL_ADMIN, ROL_REPARTIDOR])): ?>
             <?php if (has_role(ROL_REPARTIDOR) && !has_role(ROL_ADMIN)): ?>
@@ -99,7 +102,9 @@
                 </a>
             </li>
         <?php endif; ?>
+        */ ?>
 
+        <?php /* TEMPORALMENTE OCULTO - MÓDULOS FINANZAS Y REPORTES
         <!-- Ventas y Reportes (Solo Admin) -->
         <?php if (has_role(ROL_ADMIN)): ?>
             <li class="mt-3">
@@ -129,8 +134,8 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=reportes_productos">
-                    <i class="fas fa-chart-bar"></i> Productos Más Vendidos
+                <a href="<?php echo BASE_URL; ?>index.php?action=reportes_platos">
+                    <i class="fas fa-chart-bar"></i> Platos Más Vendidos
                 </a>
             </li>
 
@@ -146,6 +151,7 @@
                 </a>
             </li>
         <?php endif; ?>
+        */ ?>
 
         <!-- Configuración -->
         <li class="mt-3">

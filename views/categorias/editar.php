@@ -77,10 +77,10 @@ include __DIR__ . '/../layouts/header.php';
                         </div>
                     </div>
 
-                    <?php if (isset($categoria['cantidad_productos']) && $categoria['cantidad_productos'] > 0): ?>
+                    <?php if (isset($categoria['cantidad_platos']) && $categoria['cantidad_platos'] > 0): ?>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            <strong>Nota:</strong> Esta categoría tiene <strong><?php echo $categoria['cantidad_productos']; ?></strong> producto(s) asociado(s).
+                            <strong>Nota:</strong> Esta categoría tiene <strong><?php echo $categoria['cantidad_platos']; ?></strong> plato(s) asociado(s).
                         </div>
                     <?php endif; ?>
 

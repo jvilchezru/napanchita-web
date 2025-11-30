@@ -69,7 +69,7 @@ include __DIR__ . '/../layouts/header.php';
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Precio</th>
-                        <th>Productos</th>
+                        <th>Platos</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -96,16 +96,16 @@ include __DIR__ . '/../layouts/header.php';
                             </td>
                             <td><strong>S/ <?php echo number_format($combo['precio'], 2); ?></strong></td>
                             <td>
-                                <span class="badge bg-info"><?php echo $combo['cantidad_productos']; ?> productos</span>
-                                <?php if (!empty($combo['productos'])): ?>
+                                <span class="badge bg-info"><?php echo $combo['cantidad_platos']; ?> platos</span>
+                                <?php if (!empty($combo['platos'])): ?>
                                     <br>
                                     <small>
                                         <?php
                                         $nombres = array_slice(array_map(function ($p) {
                                             return $p['nombre'];
-                                        }, $combo['productos']), 0, 2);
+                                        }, $combo['platos']), 0, 2);
                                         echo htmlspecialchars(implode(', ', $nombres));
-                                        if (count($combo['productos']) > 2) echo '...';
+                                        if (count($combo['platos']) > 2) echo '...';
                                         ?>
                                     </small>
                                 <?php endif; ?>

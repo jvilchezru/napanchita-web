@@ -1,21 +1,21 @@
 <?php
 
 /**
- * Controlador de Productos
- * Maneja el CRUD de productos con upload de imágenes
+ * Controlador de Platos
+ * Maneja el CRUD de platos con upload de imágenes
  * Sistema Napanchita
  */
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/helpers.php';
-require_once __DIR__ . '/../models/Producto.php';
+require_once __DIR__ . '/../models/Plato.php';
 require_once __DIR__ . '/../models/Categoria.php';
 
-class ProductoController
+class PlatoController
 {
     private $db;
-    private $producto;
+    private $plato;
     private $categoria;
     private $upload_dir;
 
@@ -33,9 +33,9 @@ class ProductoController
 
         $database = new Database();
         $this->db = $database->getConnection();
-        $this->producto = new Producto($this->db);
+        $this->plato = new Plato($this->db);
         $this->categoria = new Categoria($this->db);
-        $this->upload_dir = __DIR__ . '/../public/images/productos/';
+        $this->upload_dir = __DIR__ . '/../public/images/platos/';
 
         // Crear directorio si no existe
         if (!file_exists($this->upload_dir)) {
@@ -44,13 +44,13 @@ class ProductoController
     }
 
     /**
-     * Listar productos
+     * Listar platos
      */
     public function index()
     {
-        $productos = $this->producto->listar();
+        $platos = $this->plato->listar();
         $categorias = $this->categoria->listar();
-        require_once __DIR__ . '/../views/productos/index.php';
+        require_once __DIR__ . '/../views/platos/index.php';
     }
 
     /**
@@ -59,16 +59,16 @@ class ProductoController
     public function crear()
     {
         $categorias = $this->categoria->listar(); // Todas las categorías
-        require_once __DIR__ . '/../views/productos/crear.php';
+        require_once __DIR__ . '/../views/platos/crear.php';
     }
 
     /**
-     * Guardar nuevo producto
+     * Guardar nuevo plato
      */
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('index.php?action=productos');
+            redirect('index.php?action=platos');
             return;
         }
 
@@ -82,7 +82,7 @@ class ProductoController
 
         if (empty($nombre) || !$categoria_id || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('index.php?action=productos_crear');
+            redirect('index.php?action=platos_crear');
             return;
         }
 
@@ -95,30 +95,30 @@ class ProductoController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('index.php?action=productos_crear');
+                redirect('index.php?action=platos_crear');
                 return;
             }
         }
 
         // Asignar valores
-        $this->producto->categoria_id = $categoria_id;
-        $this->producto->nombre = $nombre;
-        $this->producto->descripcion = $descripcion;
-        $this->producto->precio = $precio;
-        $this->producto->imagen_url = $imagen_url;
-        $this->producto->disponible = $disponible;
+        $this->plato->categoria_id = $categoria_id;
+        $this->plato->nombre = $nombre;
+        $this->plato->descripcion = $descripcion;
+        $this->plato->precio = $precio;
+        $this->plato->imagen_url = $imagen_url;
+        $this->plato->disponible = $disponible;
 
-        // Crear producto
-        if ($this->producto->crear()) {
-            set_flash_message('Producto creado exitosamente', 'success');
-            redirect('index.php?action=productos');
+        // Crear plato
+        if ($this->plato->crear()) {
+            set_flash_message('Plato creado exitosamente', 'success');
+            redirect('index.php?action=platos');
         } else {
             // Eliminar imagen si falla la creación
             if ($imagen_url && file_exists($imagen_url)) {
                 unlink($imagen_url);
             }
-            set_flash_message('Error al crear el producto', 'error');
-            redirect('index.php?action=productos_crear');
+            set_flash_message('Error al crear el plato', 'error');
+            redirect('index.php?action=platos_crear');
         }
     }
 
@@ -130,31 +130,31 @@ class ProductoController
         $id = $_GET['id'] ?? 0;
 
         if (!$id) {
-            set_flash_message('ID de producto no válido', 'error');
-            redirect('index.php?action=productos');
+            set_flash_message('ID de plato no válido', 'error');
+            redirect('index.php?action=platos');
             return;
         }
 
-        $this->producto->id = $id;
-        $producto = $this->producto->obtenerPorId();
+        $this->plato->id = $id;
+        $plato = $this->plato->obtenerPorId();
 
-        if (!$producto) {
-            set_flash_message('Producto no encontrada', 'error');
-            redirect('index.php?action=productos');
+        if (!$plato) {
+            set_flash_message('Plato no encontrada', 'error');
+            redirect('index.php?action=platos');
             return;
         }
 
         $categorias = $this->categoria->listar(); // Todas las categorías
-        require_once __DIR__ . '/../views/productos/editar.php';
+        require_once __DIR__ . '/../views/platos/editar.php';
     }
 
     /**
-     * Actualizar producto
+     * Actualizar plato
      */
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('index.php?action=productos');
+            redirect('index.php?action=platos');
             return;
         }
 
@@ -168,21 +168,21 @@ class ProductoController
 
         if (!$id || empty($nombre) || !$categoria_id || $precio <= 0) {
             set_flash_message('Datos incompletos o inválidos', 'error');
-            redirect('index.php?action=productos');
+            redirect('index.php?action=platos');
             return;
         }
 
-        // Obtener producto actual
-        $this->producto->id = $id;
-        $producto_actual = $this->producto->obtenerPorId();
+        // Obtener plato actual
+        $this->plato->id = $id;
+        $plato_actual = $this->plato->obtenerPorId();
 
-        if (!$producto_actual) {
-            set_flash_message('Producto no encontrado', 'error');
-            redirect('index.php?action=productos');
+        if (!$plato_actual) {
+            set_flash_message('Plato no encontrado', 'error');
+            redirect('index.php?action=platos');
             return;
         }
 
-        $imagen_url = $producto_actual['imagen_url'];
+        $imagen_url = $plato_actual['imagen_url'];
 
         // Procesar nueva imagen si se subió
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
@@ -196,32 +196,32 @@ class ProductoController
                 $imagen_url = $resultado_upload['url'];
             } else {
                 set_flash_message($resultado_upload['message'], 'error');
-                redirect('index.php?action=productos_editar&id=' . $id);
+                redirect('index.php?action=platos_editar&id=' . $id);
                 return;
             }
         }
 
         // Asignar valores
-        $this->producto->id = $id;
-        $this->producto->categoria_id = $categoria_id;
-        $this->producto->nombre = $nombre;
-        $this->producto->descripcion = $descripcion;
-        $this->producto->precio = $precio;
-        $this->producto->imagen_url = $imagen_url;
-        $this->producto->disponible = $disponible;
+        $this->plato->id = $id;
+        $this->plato->categoria_id = $categoria_id;
+        $this->plato->nombre = $nombre;
+        $this->plato->descripcion = $descripcion;
+        $this->plato->precio = $precio;
+        $this->plato->imagen_url = $imagen_url;
+        $this->plato->disponible = $disponible;
 
         // Actualizar
-        if ($this->producto->actualizar()) {
-            set_flash_message('Producto actualizado exitosamente', 'success');
-            redirect('index.php?action=productos');
+        if ($this->plato->actualizar()) {
+            set_flash_message('Plato actualizado exitosamente', 'success');
+            redirect('index.php?action=platos');
         } else {
-            set_flash_message('Error al actualizar el producto', 'error');
-            redirect('index.php?action=productos_editar&id=' . $id);
+            set_flash_message('Error al actualizar el plato', 'error');
+            redirect('index.php?action=platos_editar&id=' . $id);
         }
     }
 
     /**
-     * Cambiar estado de producto (AJAX)
+     * Cambiar estado de plato (AJAX)
      */
     public function cambiarEstado()
     {
@@ -240,7 +240,7 @@ class ProductoController
             return;
         }
 
-        if ($this->producto->cambiarEstado($id, $estado)) {
+        if ($this->plato->cambiarEstado($id, $estado)) {
             echo json_encode([
                 'success' => true,
                 'message' => 'Estado actualizado correctamente'
@@ -254,7 +254,7 @@ class ProductoController
     }
 
     /**
-     * Eliminar producto (AJAX)
+     * Eliminar plato (AJAX)
      */
     public function eliminar()
     {
@@ -272,31 +272,31 @@ class ProductoController
             return;
         }
 
-        // Obtener producto para eliminar imagen
-        $this->producto->id = $id;
-        $producto = $this->producto->obtenerPorId();
+        // Obtener plato para eliminar imagen
+        $this->plato->id = $id;
+        $plato = $this->plato->obtenerPorId();
 
-        if (!$producto) {
-            echo json_encode(['success' => false, 'message' => 'Producto no encontrado']);
+        if (!$plato) {
+            echo json_encode(['success' => false, 'message' => 'Plato no encontrado']);
             return;
         }
 
         // Eliminar
-        if ($this->producto->eliminar()) {
+        if ($this->plato->eliminar()) {
             echo json_encode([
                 'success' => true,
-                'message' => 'Producto eliminado correctamente'
+                'message' => 'Plato eliminado correctamente'
             ]);
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error al eliminar el producto'
+                'message' => 'Error al eliminar el plato'
             ]);
         }
     }
 
     /**
-     * Buscar productos (AJAX)
+     * Buscar platos (AJAX)
      */
     public function buscar()
     {
@@ -309,7 +309,7 @@ class ProductoController
             return;
         }
 
-        $resultados = $this->producto->buscar($termino);
+        $resultados = $this->plato->buscar($termino);
         echo json_encode($resultados);
     }
 
@@ -349,7 +349,7 @@ class ProductoController
         // Generar nombre único
         $nombre_nuevo = uniqid('prod_') . '.' . $extension;
         $ruta_completa = $this->upload_dir . $nombre_nuevo;
-        $ruta_relativa = 'public/images/productos/' . $nombre_nuevo;
+        $ruta_relativa = 'public/images/platos/' . $nombre_nuevo;
 
         // Mover archivo
         if (move_uploaded_file($file['tmp_name'], $ruta_completa)) {

@@ -104,6 +104,33 @@ class Mesa
     }
 
     /**
+     * Listar mesas disponibles para reservas
+     * Solo mesas activas y que no estén ocupadas o reservadas
+     * 
+     * @param int|null $mesaActualId ID de mesa actual (para edición) que debe incluirse aunque esté reservada
+     * @return array Lista de mesas disponibles para reservar
+     */
+    public function listarDisponiblesParaReserva($mesaActualId = null)
+    {
+        $query = "SELECT m.* FROM " . $this->table . " m
+                    WHERE m.activo = 1 
+                    AND (m.estado = 'disponible' OR m.id = :mesa_actual_id1)
+                    AND m.id NOT IN (
+                        SELECT mesa_id FROM reservas 
+                        WHERE estado IN ('pendiente', 'confirmada')
+                        AND fecha = CURDATE()
+                        AND mesa_id != :mesa_actual_id2
+                    )
+                    ORDER BY m.numero ASC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':mesa_actual_id1', $mesaActualId, PDO::PARAM_INT);
+        $stmt->bindParam(':mesa_actual_id2', $mesaActualId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Obtener mesa por ID
      * 
      * @return array|null Datos de la mesa

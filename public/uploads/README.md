@@ -4,7 +4,7 @@ Este directorio almacena todos los archivos subidos por los usuarios del sistema
 
 ## Estructura
 
-- `/productos/` - Imágenes de productos
+- `/platos/` - Imágenes de platos
 - `/combos/` - Imágenes de combos
 - `/usuarios/` - Avatares de usuarios
 - `/clientes/` - Documentos de clientes (opcional)

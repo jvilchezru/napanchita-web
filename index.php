@@ -259,53 +259,53 @@ try {
                 $controller->eliminar();
                 break;
 
-            // ===== PRODUCTOS (Solo Admin) =====
-            case 'productos':
+            // ===== PLATOS (Solo Admin) =====
+            case 'platos':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->index();
                 break;
 
-            case 'productos_crear':
+            case 'platos_crear':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->crear();
                 break;
 
-            case 'productos_guardar':
+            case 'platos_guardar':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->guardar();
                 break;
 
-            case 'productos_editar':
+            case 'platos_editar':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->editar();
                 break;
 
-            case 'productos_actualizar':
+            case 'platos_actualizar':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->actualizar();
                 break;
 
-            case 'productos_cambiar_estado':
+            case 'platos_cambiar_estado':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->cambiarEstado();
                 break;
 
-            case 'productos_eliminar':
+            case 'platos_eliminar':
                 AuthController::verificarAdmin();
-                require_once __DIR__ . '/controllers/ProductoController.php';
-                $controller = new ProductoController();
+                require_once __DIR__ . '/controllers/PlatoController.php';
+                $controller = new PlatoController();
                 $controller->eliminar();
                 break;
 
@@ -423,6 +423,56 @@ try {
                 $controller->eliminar();
                 break;
 
+            // ===== MÉTODOS DE PAGO (Admin) =====
+            case 'metodos_pago':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->index();
+                break;
+
+            case 'metodos_pago_crear':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->crear();
+                break;
+
+            case 'metodos_pago_guardar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->guardar();
+                break;
+
+            case 'metodos_pago_editar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->editar();
+                break;
+
+            case 'metodos_pago_actualizar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->actualizar();
+                break;
+
+            case 'metodos_pago_eliminar':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->eliminar();
+                break;
+
+            case 'metodos_pago_cambiarEstado':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/MetodoPagoController.php';
+                $controller = new MetodoPagoController();
+                $controller->cambiarEstado();
+                break;
+
             // ===== PEDIDOS (Admin y Mesero) =====
             case 'pedidos':
                 AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
@@ -476,6 +526,20 @@ try {
                 }
                 break;
 
+            case 'pedidos_finalizar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->finalizar();
+                break;
+
+            case 'pedidos_obtenerMetodosPago':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->obtenerMetodosPago();
+                break;
+
             case 'pedidos_cocina':
                 AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
                 require_once __DIR__ . '/controllers/PedidoController.php';
@@ -497,11 +561,147 @@ try {
                 $controller->buscarCliente();
                 break;
 
+            case 'pedidos_buscarClientesAutocomplete':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->buscarClientesAutocomplete();
+                break;
+
             case 'pedidos_crearClienteRapido':
                 AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
                 require_once __DIR__ . '/controllers/PedidoController.php';
                 $controller = new PedidoController();
                 $controller->crearClienteRapido();
+                break;
+
+            // ===== RESERVAS (Admin y Mesero) =====
+            case 'reservas':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->index();
+                break;
+
+            case 'reservas_crear':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->crear();
+                break;
+
+            case 'reservas_guardar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->guardar();
+                break;
+
+            case 'reservas_editar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->editar();
+                break;
+
+            case 'reservas_actualizar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->actualizar();
+                break;
+
+            case 'reservas_cambiarEstado':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->cambiarEstado();
+                break;
+
+            case 'reservas_verificarDisponibilidad':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->verificarDisponibilidad();
+                break;
+
+            case 'reservas_calendario':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->calendario();
+                break;
+
+            case 'reservas_buscarPorCodigo':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->buscarPorCodigo();
+                break;
+
+            case 'reservas_obtenerReservasDelDia':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->obtenerReservasDelDia();
+                break;
+
+            case 'reservas_marcarNoShow':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/ReservaController.php';
+                $controller = new ReservaController();
+                $controller->marcarNoShow();
+                break;
+
+            // ===== VENTAS (Admin) =====
+            case 'ventas':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->index();
+                break;
+
+            case 'ventas_registrar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->registrar();
+                break;
+
+            case 'ventas_guardar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->guardar();
+                break;
+
+            case 'cierre_caja':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->cierreCaja();
+                break;
+
+            // ===== REPORTES (Admin) =====
+            case 'reportes':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->index();
+                break;
+
+            case 'reportes_ventas':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->ventas();
+                break;
+
+            case 'reportes_platos':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->platos();
                 break;
 
             // ===== HOME / PÁGINA PÚBLICA =====

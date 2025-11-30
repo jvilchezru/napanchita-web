@@ -58,6 +58,7 @@ include __DIR__ . '/../layouts/header.php';
                         <option value="en_preparacion" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'en_preparacion') ? 'selected' : ''; ?>>En Preparación</option>
                         <option value="listo" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'listo') ? 'selected' : ''; ?>>Listo</option>
                         <option value="entregado" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'entregado') ? 'selected' : ''; ?>>Entregado</option>
+                        <option value="finalizado" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'finalizado') ? 'selected' : ''; ?>>Finalizado</option>
                         <option value="cancelado" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'cancelado') ? 'selected' : ''; ?>>Cancelado</option>
                     </select>
                 </div>
@@ -129,6 +130,7 @@ include __DIR__ . '/../layouts/header.php';
                                             'en_preparacion' => 'info',
                                             'listo' => 'primary',
                                             'entregado' => 'success',
+                                            'finalizado' => 'dark',
                                             'cancelado' => 'danger'
                                         ];
                                         $estado_textos = [
@@ -136,6 +138,7 @@ include __DIR__ . '/../layouts/header.php';
                                             'en_preparacion' => 'En Preparación',
                                             'listo' => 'Listo',
                                             'entregado' => 'Entregado',
+                                            'finalizado' => 'Finalizado',
                                             'cancelado' => 'Cancelado'
                                         ];
                                         $badge_class = $estado_badges[$pedido['estado']] ?? 'secondary';

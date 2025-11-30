@@ -107,15 +107,32 @@ include __DIR__ . '/../layouts/header.php';
 
                     <hr>
 
-                    <h5 class="mb-3"><i class="fas fa-box me-2"></i> Productos del Combo</h5>
+                    <h5 class="mb-3"><i class="fas fa-box me-2"></i> Platos del Combo</h5>
 
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i> Selecciona los productos que formarán parte del combo y la cantidad de cada uno.
+                        <i class="fas fa-info-circle me-2"></i> Selecciona los platos que formarán parte del combo y la cantidad de cada uno.
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-filter me-1"></i> Filtrar por categoría:</label>
+                            <select id="filtroCategoria" class="form-select">
+                                <option value="">Todas las categorías</option>
+                                <?php foreach ($categorias as $cat): ?>
+                                    <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-search me-1"></i> Buscar plato:</label>
+                            <input type="text" id="buscadorPlato" class="form-control" placeholder="Escribe el nombre del plato...">
+                        </div>
                     </div>
 
                     <div id="productosContainer">
-                        <?php foreach ($productos as $prod): ?>
-                            <div class="producto-item">
+                        <?php foreach ($platos as $prod): ?>
+                            <div class="producto-item" data-categoria="<?php echo $prod['categoria_id']; ?>" data-nombre="<?php echo strtolower($prod['nombre']); ?>">
                                 <div class="row align-items-center">
                                     <div class="col-md-6">
                                         <div class="form-check">
@@ -162,9 +179,9 @@ include __DIR__ . '/../layouts/header.php';
                 <h6><i class="fas fa-info-circle me-2"></i> Consejos:</h6>
                 <ul class="mb-0">
                     <li><strong>Nombre:</strong> Elige un nombre atractivo que describa el combo.</li>
-                    <li><strong>Precio:</strong> Asegúrate de que el precio del combo sea menor que la suma de los productos individuales.</li>
+                    <li><strong>Precio:</strong> Asegúrate de que el precio del combo sea menor que la suma de los platos individuales.</li>
                     <li><strong>Imagen:</strong> Una buena imagen aumenta las ventas. Usa fotos claras y apetitosas.</li>
-                    <li><strong>Productos:</strong> Debes seleccionar al menos un producto para crear el combo.</li>
+                    <li><strong>Productos:</strong> Debes seleccionar al menos un plato para crear el combo.</li>
                     <li><strong>Estado:</strong> Marca como activo para que aparezca en el menú.</li>
                 </ul>
             </div>
@@ -246,11 +263,69 @@ $extraScripts = '
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "Debes seleccionar al menos un producto para el combo"
+                text: "Debes seleccionar al menos un plato para el combo"
             });
             return false;
         }
     });
+
+    // Filtro por categoría
+    document.getElementById("filtroCategoria").addEventListener("change", function() {
+        filtrarPlatos();
+    });
+
+    // Buscador de platos
+    document.getElementById("buscadorPlato").addEventListener("keyup", function() {
+        filtrarPlatos();
+    });
+
+    function filtrarPlatos() {
+        const categoriaSeleccionada = document.getElementById("filtroCategoria").value;
+        const textoBusqueda = document.getElementById("buscadorPlato").value.toLowerCase();
+        const items = document.querySelectorAll(".producto-item");
+        let contadorVisible = 0;
+
+        items.forEach(function(item) {
+            const categoria = item.getAttribute("data-categoria");
+            const nombre = item.getAttribute("data-nombre");
+            let mostrar = true;
+
+            // Filtrar por categoría
+            if (categoriaSeleccionada && categoria !== categoriaSeleccionada) {
+                mostrar = false;
+            }
+
+            // Filtrar por búsqueda
+            if (textoBusqueda && !nombre.includes(textoBusqueda)) {
+                mostrar = false;
+            }
+
+            if (mostrar) {
+                item.style.display = "";
+                contadorVisible++;
+            } else {
+                item.style.display = "none";
+            }
+        });
+
+        // Mostrar mensaje si no hay resultados
+        const container = document.getElementById("productosContainer");
+        let mensajeNoResultados = document.getElementById("mensajeNoResultados");
+        
+        if (contadorVisible === 0) {
+            if (!mensajeNoResultados) {
+                mensajeNoResultados = document.createElement("div");
+                mensajeNoResultados.id = "mensajeNoResultados";
+                mensajeNoResultados.className = "alert alert-warning";
+                mensajeNoResultados.innerHTML = "<i class=\"fas fa-exclamation-triangle me-2\"></i> No se encontraron platos con los filtros seleccionados.";
+                container.appendChild(mensajeNoResultados);
+            }
+        } else {
+            if (mensajeNoResultados) {
+                mensajeNoResultados.remove();
+            }
+        }
+    }
 </script>
 ';
 

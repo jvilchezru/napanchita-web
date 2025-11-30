@@ -2,7 +2,7 @@
 
 /**
  * Modelo Categoria
- * Gestiona las operaciones CRUD de categorías de productos
+ * Gestiona las operaciones CRUD de categorías de platos
  * Sistema Napanchita
  */
 class Categoria
@@ -82,9 +82,9 @@ class Categoria
     public function listar($solo_activas = false)
     {
         $query = "SELECT c.*, 
-                  COUNT(p.id) as cantidad_productos
+                  COUNT(p.id) as cantidad_platos
                   FROM " . $this->table . " c
-                  LEFT JOIN productos p ON p.categoria_id = c.id";
+                  LEFT JOIN platos p ON p.categoria_id = c.id";
 
         if ($solo_activas) {
             $query .= " WHERE c.activo = TRUE";
@@ -163,15 +163,15 @@ class Categoria
      */
     public function eliminar()
     {
-        // Verificar si tiene productos asociados
-        $query_check = "SELECT COUNT(*) as total FROM productos WHERE categoria_id = :id";
+        // Verificar si tiene platos asociados
+        $query_check = "SELECT COUNT(*) as total FROM platos WHERE categoria_id = :id";
         $stmt_check = $this->conn->prepare($query_check);
         $stmt_check->bindParam(":id", $this->id, PDO::PARAM_INT);
         $stmt_check->execute();
         $result = $stmt_check->fetch(PDO::FETCH_ASSOC);
 
         if ($result['total'] > 0) {
-            // No se puede eliminar porque tiene productos asociados
+            // No se puede eliminar porque tiene platos asociados
             return false;
         }
 
@@ -214,14 +214,14 @@ class Categoria
     }
 
     /**
-     * Contar productos por categoría
+     * Contar platos por categoría
      * @param int $categoria_id ID de la categoría
-     * @return int Cantidad de productos
+     * @return int Cantidad de platos
      */
-    public function contarProductos($categoria_id)
+    public function contarPlatos($categoria_id)
     {
         $query = "SELECT COUNT(*) as total 
-                  FROM productos 
+                  FROM platos 
                   WHERE categoria_id = :categoria_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":categoria_id", $categoria_id, PDO::PARAM_INT);

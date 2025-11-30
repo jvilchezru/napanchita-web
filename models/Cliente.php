@@ -114,6 +114,64 @@ class Cliente
     }
 
     /**
+     * Obtener cliente por nombre
+     * @param string $nombre Nombre del cliente
+     * @return array|false Datos del cliente o false si no existe
+     */
+    public function obtenerPorNombre($nombre)
+    {
+        $query = "SELECT * FROM " . $this->table . " WHERE nombre LIKE :nombre AND activo = TRUE LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $nombreBusqueda = "%{$nombre}%";
+        $stmt->bindParam(":nombre", $nombreBusqueda);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row && $row['direcciones']) {
+            $row['direcciones'] = json_decode($row['direcciones'], true);
+        }
+
+        return $row;
+    }
+
+    /**
+     * Buscar múltiples clientes por nombre (para autocompletado)
+     * @param string $nombre Nombre del cliente
+     * @return array Array de clientes
+     */
+    public function buscarPorNombre($nombre)
+    {
+        $query = "SELECT id, nombre, telefono, email FROM " . $this->table . " 
+                  WHERE nombre LIKE :nombre AND activo = TRUE 
+                  ORDER BY nombre ASC LIMIT 10";
+        $stmt = $this->conn->prepare($query);
+        $nombreBusqueda = "%{$nombre}%";
+        $stmt->bindParam(":nombre", $nombreBusqueda);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Buscar múltiples clientes por teléfono (para autocompletado)
+     * @param string $telefono Teléfono del cliente
+     * @return array Array de clientes
+     */
+    public function buscarPorTelefono($telefono)
+    {
+        $query = "SELECT id, nombre, telefono, email FROM " . $this->table . " 
+                  WHERE telefono LIKE :telefono AND activo = TRUE 
+                  ORDER BY nombre ASC LIMIT 10";
+        $stmt = $this->conn->prepare($query);
+        $telefonoBusqueda = "%{$telefono}%";
+        $stmt->bindParam(":telefono", $telefonoBusqueda);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Listar clientes
      * @param bool $soloActivos Si es true, solo retorna clientes activos
      * @return array Array de clientes

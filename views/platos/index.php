@@ -29,11 +29,11 @@ include __DIR__ . '/../layouts/header.php';
 </style>
 
 <div class="page-header">
-    <h1><i class="fas fa-fish me-2"></i> Gestión de Productos</h1>
+    <h1><i class="fas fa-fish me-2"></i> Gestión de Platos</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>index.php?action=dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item active">Productos</li>
+            <li class="breadcrumb-item active">Platos</li>
         </ol>
     </nav>
 </div>
@@ -52,14 +52,14 @@ include __DIR__ . '/../layouts/header.php';
         <div class="card-header bg-primary text-white">
             <div class="row align-items-center">
                 <div class="col">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> Listado de Productos</h5>
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Listado de Platos</h5>
                 </div>
                 <div class="col-auto">
                     <a href="<?php echo BASE_URL; ?>index.php?action=categorias" class="btn btn-light btn-sm">
                         <i class="fas fa-tags"></i> Categorías
                     </a>
-                    <a href="<?php echo BASE_URL; ?>index.php?action=productos_crear" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus"></i> Nuevo Producto
+                    <a href="<?php echo BASE_URL; ?>index.php?action=platos_crear" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Nuevo Plato
                     </a>
                 </div>
             </div>
@@ -68,22 +68,22 @@ include __DIR__ . '/../layouts/header.php';
             <!-- Filtros -->
             <div class="row mb-3">
                 <div class="col-md-4">
-                    <label for="filtroCategoria">Filtrar por Categoría:</label>
+                    <label for="filtroCategoria" class="form-label">Categoría:</label>
                     <select id="filtroCategoria" class="form-select">
                         <option value="">Todas las categorías</option>
                         <?php foreach ($categorias as $cat): ?>
-                            <option value="<?php echo htmlspecialchars($cat['nombre']); ?>">
+                            <option value="<?php echo $cat['id']; ?>">
                                 <?php echo htmlspecialchars($cat['nombre']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="filtroDisponible">Filtrar por Disponibilidad:</label>
+                    <label for="filtroDisponible" class="form-label">Disponibilidad:</label>
                     <select id="filtroDisponible" class="form-select">
                         <option value="">Todos</option>
-                        <option value="Disponible">Disponible</option>
-                        <option value="No Disponible">No Disponible</option>
+                        <option value="1">Disponible</option>
+                        <option value="0">No Disponible</option>
                     </select>
                 </div>
             </div>
@@ -101,7 +101,7 @@ include __DIR__ . '/../layouts/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($productos as $prod): ?>
+                    <?php foreach ($platos as $prod): ?>
                         <tr>
                             <td>
                                 <?php if (!empty($prod['imagen_url']) && file_exists($prod['imagen_url'])): ?>
@@ -120,18 +120,18 @@ include __DIR__ . '/../layouts/header.php';
                                 <br>
                                 <small class="text-muted"><?php echo htmlspecialchars(substr($prod['descripcion'] ?? '', 0, 50)); ?></small>
                             </td>
-                            <td data-categoria="<?php echo htmlspecialchars($prod['categoria_nombre'] ?? 'Sin categoría'); ?>">
+                            <td data-categoria-id="<?php echo $prod['categoria_id'] ?? ''; ?>">
                                 <?php echo htmlspecialchars($prod['categoria_nombre'] ?? 'Sin categoría'); ?>
                             </td>
                             <td><strong>S/ <?php echo number_format($prod['precio'], 2); ?></strong></td>
-                            <td data-disponible="<?php echo $prod['disponible'] ? 'Disponible' : 'No Disponible'; ?>">
+                            <td data-disponible="<?php echo $prod['disponible'] ? '1' : '0'; ?>">
                                 <span class="badge <?php echo $prod['disponible'] ? 'badge-disponible' : 'badge-no-disponible'; ?>">
                                     <?php echo $prod['disponible'] ? 'Disponible' : 'No Disponible'; ?>
                                 </span>
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="<?php echo BASE_URL; ?>index.php?action=productos_editar&id=<?php echo $prod['id']; ?>"
+                                    <a href="<?php echo BASE_URL; ?>index.php?action=platos_editar&id=<?php echo $prod['id']; ?>"
                                         class="btn btn-warning" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -155,57 +155,31 @@ include __DIR__ . '/../layouts/header.php';
 
 <script>
     let tabla;
-    let filtroCategoriaActual = '';
-    let filtroDisponibleActual = '';
 
     $(document).ready(function() {
-        // Filtro personalizado global
+        // Filtro personalizado para DataTables
         $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex, rowData, counter) {
-                // DEBUG: Mostrar valores
-                console.log('=== FILTRO EJECUTÁNDOSE ===');
-                console.log('DataIndex:', dataIndex);
-                console.log('Data Array:', data);
-                console.log('Filtro Categoría Actual:', filtroCategoriaActual);
-                console.log('Filtro Disponible Actual:', filtroDisponibleActual);
-
-                // Obtener la fila actual del DOM
+            function(settings, data, dataIndex) {
+                const categoriaId = $('#filtroCategoria').val();
+                const disponible = $('#filtroDisponible').val();
                 const row = tabla.row(dataIndex).node();
-                console.log('Row:', row);
-
-                // Verificar filtro de categoría
-                if (filtroCategoriaActual !== '') {
-                    const categoriaCell = $(row).find('td').eq(3); // Columna de categoría
-                    const categoriaValor = categoriaCell.attr('data-categoria') || categoriaCell.text().trim();
-
-                    console.log('Categoría Cell:', categoriaCell);
-                    console.log('Categoría Valor obtenido:', categoriaValor);
-                    console.log('Comparando:', categoriaValor, '===', filtroCategoriaActual);
-
-                    if (categoriaValor !== filtroCategoriaActual) {
-                        console.log('❌ NO PASA filtro de categoría');
+                
+                // Filtro de categoría
+                if (categoriaId !== '') {
+                    const rowCategoriaId = $(row).find('td[data-categoria-id]').attr('data-categoria-id');
+                    if (rowCategoriaId != categoriaId) {
                         return false;
                     }
-                    console.log('✅ PASA filtro de categoría');
                 }
-
-                // Verificar filtro de disponibilidad
-                if (filtroDisponibleActual !== '') {
-                    const disponibleCell = $(row).find('td').eq(5); // Columna de disponibilidad
-                    const disponibleValor = disponibleCell.attr('data-disponible') || disponibleCell.text().trim();
-
-                    console.log('Disponible Cell:', disponibleCell);
-                    console.log('Disponible Valor obtenido:', disponibleValor);
-                    console.log('Comparando:', disponibleValor, '===', filtroDisponibleActual);
-
-                    if (disponibleValor !== filtroDisponibleActual) {
-                        console.log('❌ NO PASA filtro de disponibilidad');
+                
+                // Filtro de disponibilidad
+                if (disponible !== '') {
+                    const rowDisponible = $(row).find('td[data-disponible]').attr('data-disponible');
+                    if (rowDisponible != disponible) {
                         return false;
                     }
-                    console.log('✅ PASA filtro de disponibilidad');
                 }
-
-                console.log('✅ FILA MOSTRADA');
+                
                 return true;
             }
         );
@@ -223,26 +197,12 @@ include __DIR__ . '/../layouts/header.php';
 
         // Filtro por categoría
         $('#filtroCategoria').on('change', function() {
-            const valorAnterior = filtroCategoriaActual;
-            filtroCategoriaActual = this.value;
-            console.log('🔍 CAMBIO FILTRO CATEGORÍA');
-            console.log('Valor anterior:', valorAnterior);
-            console.log('Valor nuevo:', filtroCategoriaActual);
-            console.log('Ejecutando tabla.draw()...');
             tabla.draw();
-            console.log('tabla.draw() ejecutado');
         });
 
         // Filtro por disponibilidad
         $('#filtroDisponible').on('change', function() {
-            const valorAnterior = filtroDisponibleActual;
-            filtroDisponibleActual = this.value;
-            console.log('🔍 CAMBIO FILTRO DISPONIBILIDAD');
-            console.log('Valor anterior:', valorAnterior);
-            console.log('Valor nuevo:', filtroDisponibleActual);
-            console.log('Ejecutando tabla.draw()...');
             tabla.draw();
-            console.log('tabla.draw() ejecutado');
         });
     });
 
@@ -261,7 +221,7 @@ include __DIR__ . '/../layouts/header.php';
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '<?php echo BASE_URL; ?>index.php?action=productos_cambiar_estado',
+                    url: '<?php echo BASE_URL; ?>index.php?action=platos_cambiar_estado',
                     method: 'POST',
                     data: {
                         id: id,
@@ -288,7 +248,7 @@ include __DIR__ . '/../layouts/header.php';
     function eliminarProducto(id) {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: 'Esta acción eliminará el producto y su imagen. No se puede revertir.',
+            text: 'Esta acción eliminará el plato y su imagen. No se puede revertir.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -298,7 +258,7 @@ include __DIR__ . '/../layouts/header.php';
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '<?php echo BASE_URL; ?>index.php?action=productos_eliminar',
+                    url: '<?php echo BASE_URL; ?>index.php?action=platos_eliminar',
                     method: 'POST',
                     data: {
                         id: id
@@ -314,7 +274,7 @@ include __DIR__ . '/../layouts/header.php';
                         }
                     },
                     error: function() {
-                        Swal.fire('Error', 'Error al eliminar el producto', 'error');
+                        Swal.fire('Error', 'Error al eliminar el plato', 'error');
                     }
                 });
             }

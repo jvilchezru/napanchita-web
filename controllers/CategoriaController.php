@@ -220,13 +220,13 @@ class CategoriaController
             return;
         }
 
-        // Verificar si la categoría tiene productos
-        $cantidadProductos = $this->categoria->contarProductos($id);
+        // Verificar si la categoría tiene platos
+        $cantidadPlatos = $this->categoria->contarPlatos($id);
 
-        if ($cantidadProductos > 0) {
+        if ($cantidadPlatos > 0) {
             echo json_encode([
                 'success' => false,
-                'message' => "No se puede eliminar. La categoría tiene {$cantidadProductos} producto(s) asociado(s)"
+                'message' => "No se puede eliminar. La categoría tiene {$cantidadPlatos} plato(s) asociado(s)"
             ]);
             return;
         }

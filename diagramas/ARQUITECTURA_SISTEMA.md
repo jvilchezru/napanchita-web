@@ -159,7 +159,7 @@ controllers/
 ├── UsuarioController.php       # CRUD de usuarios
 ├── ClienteController.php       # CRUD de clientes
 ├── CategoriaController.php     # CRUD de categorías
-├── ProductoController.php      # CRUD de productos
+├── PlatoController.php      # CRUD de productos
 ├── ComboController.php         # CRUD de combos
 ├── PedidoController.php        # Gestión de pedidos
 ├── MesaController.php          # Gestión de mesas
@@ -305,8 +305,8 @@ switch($action) {
     // Productos
     case 'productos':
         AuthController::verificarSesion();
-        require_once 'controllers/ProductoController.php';
-        $controller = new ProductoController();
+        require_once 'controllers/PlatoController.php';
+        $controller = new PlatoController();
         $controller->listar();
         break;
 
