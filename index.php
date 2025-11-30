@@ -77,6 +77,28 @@ try {
                         require_once __DIR__ . '/views/dashboard/admin.php';
                         break;
                     case ROL_MESERO:
+                        // Cargar datos para el dashboard del mesero
+                        require_once __DIR__ . '/config/database.php';
+                        require_once __DIR__ . '/models/Mesa.php';
+                        require_once __DIR__ . '/models/Pedido.php';
+                        require_once __DIR__ . '/models/Reserva.php';
+                        
+                        $database = new Database();
+                        $db = $database->getConnection();
+                        
+                        $mesaModel = new Mesa($db);
+                        $pedidoModel = new Pedido($db);
+                        $reservaModel = new Reserva($db);
+                        
+                        // Obtener todas las mesas activas
+                        $mesas = $mesaModel->listar(true);
+                        
+                        // Obtener pedidos activos del mesero
+                        $pedidos_activos = $pedidoModel->listarPorUsuario($_SESSION['usuario_id']);
+                        
+                        // Obtener reservas del día
+                        $reservas_hoy = $reservaModel->listarPorFecha(date('Y-m-d'));
+                        
                         require_once __DIR__ . '/views/dashboard/mesero.php';
                         break;
                     case ROL_REPARTIDOR:
@@ -86,6 +108,50 @@ try {
                         redirect('login');
                         break;
                 }
+                break;
+
+            // ===== MI PERFIL =====
+            case 'perfil':
+                AuthController::verificarSesion();
+                require_once __DIR__ . '/controllers/UsuarioController.php';
+                $controller = new UsuarioController();
+                $controller->perfil();
+                break;
+
+            case 'perfil_actualizar':
+                AuthController::verificarSesion();
+                require_once __DIR__ . '/controllers/UsuarioController.php';
+                $controller = new UsuarioController();
+                $controller->actualizarPerfil();
+                break;
+
+            case 'perfil_cambiar_password':
+                AuthController::verificarSesion();
+                require_once __DIR__ . '/controllers/UsuarioController.php';
+                $controller = new UsuarioController();
+                $controller->cambiarPassword();
+                break;
+
+            // ===== CONFIGURACIÓN (Solo Admin) =====
+            case 'configuracion':
+                AuthController::verificarRol([ROL_ADMIN]);
+                require_once __DIR__ . '/controllers/ConfiguracionController.php';
+                $controller = new ConfiguracionController();
+                $controller->index();
+                break;
+
+            case 'configuracion_guardar':
+                AuthController::verificarRol([ROL_ADMIN]);
+                require_once __DIR__ . '/controllers/ConfiguracionController.php';
+                $controller = new ConfiguracionController();
+                $controller->guardar();
+                break;
+
+            case 'configuracion_subir_logo':
+                AuthController::verificarRol([ROL_ADMIN]);
+                require_once __DIR__ . '/controllers/ConfiguracionController.php';
+                $controller = new ConfiguracionController();
+                $controller->subirLogo();
                 break;
 
             // ===== USUARIOS (Solo Admin) =====
@@ -499,9 +565,39 @@ try {
                 AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
                 require_once __DIR__ . '/controllers/PedidoController.php';
                 $controller = new PedidoController();
-                $id = $_GET['id'] ?? null;
-                if ($id) {
-                    $controller->ver($id);
+                $id = intval($_GET['id'] ?? 0);
+                if ($id > 0) {
+                    // Cargar pedido directamente aquí
+                    require_once __DIR__ . '/models/Pedido.php';
+                    $database = new Database();
+                    $db = $database->getConnection();
+                    $pedidoModel = new Pedido($db);
+                    
+                    $pedidoModel->id = $id;
+                    $pedido = $pedidoModel->obtenerPorId();
+                    
+                    if (!$pedido) {
+                        $_SESSION['error'] = 'Pedido no encontrado';
+                        redirect('pedidos');
+                        exit;
+                    }
+                    
+                    // Cargar venta si está finalizado
+                    $venta = null;
+                    if ($pedido['estado'] === 'finalizado') {
+                        $stmt = $db->prepare("
+                            SELECT v.*, mp.nombre as metodo_pago, u.nombre as cajero
+                            FROM ventas v
+                            LEFT JOIN metodos_pago mp ON v.metodo_pago_id = mp.id
+                            LEFT JOIN usuarios u ON v.usuario_id = u.id
+                            WHERE v.pedido_id = :pedido_id
+                        ");
+                        $stmt->bindParam(':pedido_id', $id);
+                        $stmt->execute();
+                        $venta = $stmt->fetch(PDO::FETCH_ASSOC);
+                    }
+                    
+                    require_once __DIR__ . '/views/pedidos/ver.php';
                 } else {
                     redirect('pedidos');
                 }

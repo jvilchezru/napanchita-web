@@ -389,4 +389,22 @@ class Cliente
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
     }
+
+    /**
+     * Contar clientes nuevos desde una fecha
+     * @param string $desde Fecha desde la cual contar (Y-m-d)
+     * @return int Cantidad de clientes nuevos
+     */
+    public function contarNuevos($desde)
+    {
+        $query = "SELECT COUNT(*) as total 
+                  FROM " . $this->table . " 
+                  WHERE DATE(fecha_registro) >= :desde";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":desde", $desde);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
 }

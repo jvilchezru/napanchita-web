@@ -512,4 +512,12 @@ class Reserva
     {
         return $this->cancelar($id);
     }
+
+    /**
+     * Listar reservas por fecha específica
+     */
+    public function listarPorFecha($fecha)
+    {
+        return $this->listar(['fecha' => $fecha]);
+    }
 }

@@ -12,40 +12,60 @@ include __DIR__ . '/../layouts/header.php';
     </nav>
 </div>
 
+<?php
+// Obtener datos reales del sistema
+require_once __DIR__ . '/../../models/Pedido.php';
+require_once __DIR__ . '/../../models/Cliente.php';
+require_once __DIR__ . '/../../models/Mesa.php';
+
+$database = new Database();
+$db = $database->getConnection();
+
+$pedidoModel = new Pedido($db);
+$clienteModel = new Cliente($db);
+$mesaModel = new Mesa($db);
+
+// Estadísticas de pedidos
+$estadisticasPedidos = $pedidoModel->obtenerEstadisticas(date('Y-m-d'));
+$pedidosHoy = $estadisticasPedidos['total_pedidos'] ?? 0;
+$pedidosPendientes = $estadisticasPedidos['pendientes'] ?? 0;
+
+// Clientes registrados esta semana
+$fechaInicioSemana = date('Y-m-d', strtotime('monday this week'));
+$clientesNuevos = $clienteModel->contarNuevos($fechaInicioSemana);
+
+// Estado de mesas
+$estadoMesas = $mesaModel->obtenerEstadisticas();
+$mesasDisponibles = $estadoMesas['disponibles'] ?? 0;
+$mesasOcupadas = $estadoMesas['ocupadas'] ?? 0;
+$mesasReservadas = $estadoMesas['reservadas'] ?? 0;
+?>
+
 <!-- Tarjetas de Estadísticas -->
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="stat-card blue">
             <i class="fas fa-shopping-cart"></i>
             <p>Pedidos Hoy</p>
-            <h3 id="pedidosHoy">0</h3>
-            <small>+15% vs ayer</small>
+            <h3><?php echo $pedidosHoy; ?></h3>
+            <small><?php echo date('d/m/Y'); ?></small>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="stat-card green">
-            <i class="fas fa-dollar-sign"></i>
-            <p>Ventas Hoy</p>
-            <h3 id="ventasHoy">S/ 0.00</h3>
-            <small>+8% vs ayer</small>
-        </div>
-    </div>
-
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="stat-card orange">
             <i class="fas fa-users"></i>
             <p>Clientes Nuevos</p>
-            <h3 id="clientesNuevos">0</h3>
+            <h3><?php echo $clientesNuevos; ?></h3>
             <small>Esta semana</small>
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="stat-card red">
             <i class="fas fa-clock"></i>
             <p>Pedidos Pendientes</p>
-            <h3 id="pedidosPendientes">0</h3>
+            <h3><?php echo $pedidosPendientes; ?></h3>
             <small>Requieren atención</small>
         </div>
     </div>
@@ -53,46 +73,43 @@ include __DIR__ . '/../layouts/header.php';
 
 <!-- Gráficos y Tablas -->
 <div class="row mt-4">
-    <!-- Gráfico de Ventas -->
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-chart-area me-2"></i> Ventas de los Últimos 7 Días
-            </div>
-            <div class="card-body">
-                <canvas id="ventasChart" height="80"></canvas>
-            </div>
-        </div>
-    </div>
-
+    <?php
+    // Obtener platos más vendidos
+    $queryTopPlatos = "SELECT pi.nombre, COUNT(*) as cantidad 
+                       FROM pedido_items pi 
+                       INNER JOIN pedidos p ON pi.pedido_id = p.id 
+                       WHERE p.fecha_pedido >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+                       GROUP BY pi.nombre 
+                       ORDER BY cantidad DESC 
+                       LIMIT 5";
+    $stmtTop = $db->query($queryTopPlatos);
+    $platosTop = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
+    ?>
+    
     <!-- Platos Más Vendidos -->
-    <div class="col-md-4">
+    <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                <i class="fas fa-fire me-2"></i> Platos Top
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-fire me-2"></i> Platos Más Vendidos (Últimos 7 Días)</h5>
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        Ceviche Clásico
-                        <span class="badge bg-primary rounded-pill">45</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        Chicharrón de Pescado
-                        <span class="badge bg-primary rounded-pill">38</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        Arroz con Mariscos
-                        <span class="badge bg-primary rounded-pill">32</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        Jalea Mixta
-                        <span class="badge bg-primary rounded-pill">28</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        Leche de Tigre
-                        <span class="badge bg-primary rounded-pill">25</span>
-                    </div>
+                    <?php if (!empty($platosTop)): ?>
+                        <?php foreach ($platosTop as $index => $plato): ?>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong class="text-primary me-2">#<?php echo $index + 1; ?></strong>
+                                    <?php echo htmlspecialchars($plato['nombre']); ?>
+                                </span>
+                                <span class="badge bg-primary rounded-pill fs-6"><?php echo $plato['cantidad']; ?> pedidos</span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="list-group-item text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                            No hay datos disponibles
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -100,13 +117,18 @@ include __DIR__ . '/../layouts/header.php';
 </div>
 
 <div class="row mt-4">
+    <?php
+    // Obtener pedidos recientes
+    $pedidosRecientes = $pedidoModel->listar(['limit' => 10]);
+    ?>
+    
     <!-- Pedidos Recientes -->
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-list me-2"></i> Pedidos Recientes</span>
-                <a href="<?php echo BASE_URL; ?>index.php?action=pedidos" class="btn btn-sm btn-primary">
-                    Ver Todos
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i> Pedidos Recientes</h5>
+                <a href="<?php echo BASE_URL; ?>index.php?action=pedidos" class="btn btn-sm btn-light">
+                    <i class="fas fa-arrow-right me-1"></i> Ver Todos
                 </a>
             </div>
             <div class="card-body">
@@ -115,19 +137,68 @@ include __DIR__ . '/../layouts/header.php';
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Cliente</th>
+                                <th>Cliente/Mesa</th>
                                 <th>Tipo</th>
                                 <th>Total</th>
                                 <th>Estado</th>
+                                <th>Fecha</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="pedidosRecientes">
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">
-                                    <i class="fas fa-spinner fa-spin me-2"></i> Cargando pedidos...
-                                </td>
-                            </tr>
+                        <tbody>
+                            <?php if (!empty($pedidosRecientes)): ?>
+                                <?php foreach ($pedidosRecientes as $pedido): ?>
+                                    <tr>
+                                        <td><strong>#<?php echo $pedido['id']; ?></strong></td>
+                                        <td>
+                                            <?php 
+                                            if ($pedido['tipo'] == 'mesa') {
+                                                echo 'Mesa ' . ($pedido['mesa_numero'] ?? 'N/A');
+                                            } else {
+                                                echo htmlspecialchars($pedido['cliente_nombre'] ?? 'Cliente');
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            $tipos = [
+                                                'mesa' => '<span class="badge bg-info">Mesa</span>',
+                                                'delivery' => '<span class="badge bg-warning">Delivery</span>',
+                                                'para_llevar' => '<span class="badge bg-secondary">Para Llevar</span>'
+                                            ];
+                                            echo $tipos[$pedido['tipo']] ?? $pedido['tipo'];
+                                            ?>
+                                        </td>
+                                        <td><strong>S/ <?php echo number_format($pedido['total'], 2); ?></strong></td>
+                                        <td>
+                                            <?php
+                                            $estados = [
+                                                'pendiente' => '<span class="badge bg-warning">Pendiente</span>',
+                                                'en_preparacion' => '<span class="badge bg-info">En Preparación</span>',
+                                                'listo' => '<span class="badge bg-primary">Listo</span>',
+                                                'entregado' => '<span class="badge bg-success">Entregado</span>',
+                                                'finalizado' => '<span class="badge bg-dark">Finalizado</span>',
+                                                'cancelado' => '<span class="badge bg-danger">Cancelado</span>'
+                                            ];
+                                            echo $estados[$pedido['estado']] ?? $pedido['estado'];
+                                            ?>
+                                        </td>
+                                        <td><?php echo date('d/m H:i', strtotime($pedido['fecha_pedido'])); ?></td>
+                                        <td>
+                                            <a href="<?php echo BASE_URL; ?>index.php?action=pedidos_ver&id=<?php echo $pedido['id']; ?>" 
+                                               class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        No hay pedidos registrados
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -136,26 +207,39 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 
     <!-- Estado de Mesas -->
-    <div class="col-md-4">
+    <div class="col-md-12 mt-4">
         <div class="card">
-            <div class="card-header">
-                <i class="fas fa-table me-2"></i> Estado de Mesas
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i> Estado de Mesas</h5>
             </div>
             <div class="card-body">
-                <canvas id="mesasChart"></canvas>
-
-                <div class="mt-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span><i class="fas fa-circle text-success me-2"></i> Disponibles</span>
-                        <strong id="mesasDisponibles">0</strong>
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div style="max-width: 250px; margin: 0 auto;">
+                            <canvas id="mesasChart"></canvas>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span><i class="fas fa-circle text-danger me-2"></i> Ocupadas</span>
-                        <strong id="mesasOcupadas">0</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span><i class="fas fa-circle text-warning me-2"></i> Reservadas</span>
-                        <strong id="mesasReservadas">0</strong>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex justify-content-between p-3 bg-light rounded border border-success">
+                                    <span><i class="fas fa-circle text-success me-2"></i> Disponibles</span>
+                                    <strong class="fs-4 text-success"><?php echo $mesasDisponibles; ?></strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex justify-content-between p-3 bg-light rounded border border-danger">
+                                    <span><i class="fas fa-circle text-danger me-2"></i> Ocupadas</span>
+                                    <strong class="fs-4 text-danger"><?php echo $mesasOcupadas; ?></strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex justify-content-between p-3 bg-light rounded border border-warning">
+                                    <span><i class="fas fa-circle text-warning me-2"></i> Reservadas</span>
+                                    <strong class="fs-4 text-warning"><?php echo $mesasReservadas; ?></strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,66 +247,18 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </div>
 
-<!-- Actividad Reciente -->
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-history me-2"></i> Actividad Reciente del Sistema
-            </div>
-            <div class="card-body">
-                <div class="list-group list-group-flush" id="actividadReciente">
-                    <div class="text-center text-muted py-3">
-                        <i class="fas fa-spinner fa-spin me-2"></i> Cargando actividad...
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php
 $extraScripts = '
 <script>
-    // Gráfico de Ventas
-    const ventasCtx = document.getElementById("ventasChart").getContext("2d");
-    const ventasChart = new Chart(ventasCtx, {
-        type: "line",
-        data: {
-            labels: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
-            datasets: [{
-                label: "Ventas (S/)",
-                data: [1200, 1900, 1500, 2100, 2400, 2800, 2200],
-                borderColor: "rgb(102, 126, 234)",
-                backgroundColor: "rgba(102, 126, 234, 0.1)",
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: true
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    
-    // Gráfico de Mesas
+    // Gráfico de Mesas con datos reales
     const mesasCtx = document.getElementById("mesasChart").getContext("2d");
     const mesasChart = new Chart(mesasCtx, {
         type: "doughnut",
         data: {
             labels: ["Disponibles", "Ocupadas", "Reservadas"],
             datasets: [{
-                data: [5, 3, 2],
+                data: [' . $mesasDisponibles . ', ' . $mesasOcupadas . ', ' . $mesasReservadas . '],
                 backgroundColor: [
                     "rgb(40, 167, 69)",
                     "rgb(220, 53, 69)",
@@ -240,19 +276,6 @@ $extraScripts = '
             }
         }
     });
-    
-    // Actualizar estadísticas (simulado)
-    document.getElementById("pedidosHoy").textContent = "24";
-    document.getElementById("ventasHoy").textContent = "S/ 2,450.00";
-    document.getElementById("clientesNuevos").textContent = "12";
-    document.getElementById("pedidosPendientes").textContent = "3";
-    
-    document.getElementById("mesasDisponibles").textContent = "5";
-    document.getElementById("mesasOcupadas").textContent = "3";
-    document.getElementById("mesasReservadas").textContent = "2";
-    
-    // Cargar datos reales con AJAX (para implementar en Sprint 2+)
-    // TODO: Implementar llamadas AJAX a los controladores correspondientes
 </script>
 ';
 

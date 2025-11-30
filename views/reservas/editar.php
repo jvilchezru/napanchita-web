@@ -30,7 +30,7 @@ include __DIR__ . '/../layouts/header.php';
                             <div class="col-md-6 mb-3">
                                 <label for="cliente_id" class="form-label">Cliente <span class="text-danger">*</span></label>
                                 <?php 
-                                $campoDeshabilitado = in_array($reserva['estado'], ['cancelada', 'completada']) || $reserva['estado'] == 'confirmada';
+                                $campoDeshabilitado = in_array($reserva['estado'], ['cancelada', 'completada', 'no_show']) || $reserva['estado'] == 'confirmada';
                                 if ($campoDeshabilitado): 
                                 ?>
                                     <!-- Campo hidden para enviar el cliente_id cuando el select está deshabilitado -->
@@ -50,7 +50,12 @@ include __DIR__ . '/../layouts/header.php';
                             <!-- Mesa -->
                             <div class="col-md-6 mb-3">
                                 <label for="mesa_id" class="form-label">Mesa <span class="text-danger">*</span></label>
-                                <select name="mesa_id" id="mesa_id" class="form-select" <?php echo in_array($reserva['estado'], ['cancelada', 'completada']) ? 'disabled' : ''; ?> required>
+                                <?php 
+                                $fechaHoraReserva = strtotime($reserva['fecha'] . ' ' . $reserva['hora']);
+                                $yaPasoHora = $fechaHoraReserva <= time();
+                                $deshabilitarMesaPersonas = in_array($reserva['estado'], ['cancelada', 'completada', 'no_show']) || ($reserva['estado'] == 'confirmada' && $yaPasoHora);
+                                ?>
+                                <select name="mesa_id" id="mesa_id" class="form-select" <?php echo $deshabilitarMesaPersonas ? 'disabled' : ''; ?> required>
                                     <option value="">Seleccione una mesa</option>
                                     <?php foreach ($mesas as $mesa): ?>
                                         <option value="<?php echo $mesa['id']; ?>" 
@@ -109,7 +114,7 @@ include __DIR__ . '/../layouts/header.php';
                                 <label for="personas" class="form-label">Personas <span class="text-danger">*</span></label>
                                 <input type="number" name="personas" id="personas" class="form-control" 
                                        value="<?php echo $reserva['personas']; ?>" min="1" max="20" 
-                                       <?php echo in_array($reserva['estado'], ['cancelada', 'completada']) ? 'disabled' : ''; ?> required>
+                                       <?php echo $deshabilitarMesaPersonas ? 'disabled' : ''; ?> required>
                             </div>
 
                             <!-- Estado -->
@@ -174,6 +179,10 @@ include __DIR__ . '/../layouts/header.php';
                             <div class="alert alert-success">
                                 <i class="fas fa-check-circle"></i> Esta reserva está completada y no puede ser modificada.
                             </div>
+                        <?php elseif ($reserva['estado'] == 'no_show'): ?>
+                            <div class="alert alert-dark">
+                                <i class="fas fa-user-times"></i> Esta reserva está marcada como No Show y no puede ser modificada.
+                            </div>
                         <?php endif; ?>
 
                         <?php
@@ -185,24 +194,26 @@ include __DIR__ . '/../layouts/header.php';
 
                         <div class="d-flex justify-content-between">
                             <a href="<?php echo BASE_URL; ?>index.php?action=reservas" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> <?php echo in_array($reserva['estado'], ['cancelada', 'confirmada', 'completada']) ? 'Volver' : 'Cancelar'; ?>
+                                <i class="fas fa-arrow-left"></i> <?php echo in_array($reserva['estado'], ['cancelada', 'confirmada', 'completada', 'no_show']) ? 'Volver' : 'Cancelar'; ?>
                             </a>
                             <?php if ($reserva['estado'] == 'pendiente'): ?>
                                 <button type="submit" class="btn btn-warning" id="btnGuardar">
                                     <i class="fas fa-save"></i> Actualizar Reserva
                                 </button>
                             <?php elseif ($reserva['estado'] == 'confirmada'): ?>
-                                <button type="submit" class="btn btn-warning" id="btnGuardarConfirmada">
-                                    <i class="fas fa-save"></i> Actualizar Reserva
-                                </button>
-                                <?php if ($puedeCompletar): ?>
-                                    <button type="button" class="btn btn-info" id="btnCompletarReserva">
-                                        <i class="fas fa-check"></i> Completar Reserva
+                                <?php if (!$puedeCompletar): ?>
+                                    <!-- Antes de la hora: permitir actualizar mesa y personas -->
+                                    <button type="submit" class="btn btn-warning" id="btnGuardarConfirmada">
+                                        <i class="fas fa-save"></i> Actualizar Reserva
                                     </button>
-                                <?php else: ?>
                                     <button type="button" class="btn btn-secondary" disabled 
                                             title="Disponible a las <?php echo date('H:i', $fechaHoraReserva); ?>">
                                         <i class="fas fa-clock"></i> Esperar Hora
+                                    </button>
+                                <?php else: ?>
+                                    <!-- Después de la hora: solo permitir completar o no show -->
+                                    <button type="button" class="btn btn-info" id="btnCompletarReserva">
+                                        <i class="fas fa-check"></i> Completar Reserva
                                     </button>
                                 <?php endif; ?>
                             <?php endif; ?>

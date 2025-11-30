@@ -159,7 +159,7 @@
         </li>
 
         <li>
-            <a href="<?php echo BASE_URL; ?>index.php?action=mi_perfil">
+            <a href="<?php echo BASE_URL; ?>index.php?action=perfil">
                 <i class="fas fa-user-circle"></i> Mi Perfil
             </a>
         </li>

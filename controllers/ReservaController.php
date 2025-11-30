@@ -137,6 +137,13 @@ class ReservaController
             return;
         }
         
+        // Validar: no_show no se pueden editar
+        if ($reservaActual['estado'] === 'no_show') {
+            set_flash_message('No se puede modificar una reserva marcada como No Show', 'error');
+            redirect('index.php?action=reservas');
+            return;
+        }
+        
         // Validar: confirmadas solo pueden cambiar mesa, personas o estado (no fecha, hora, cliente, notas)
         if ($reservaActual['estado'] === 'confirmada') {
             // Verificar que no se cambien los campos bloqueados
@@ -155,6 +162,22 @@ class ReservaController
                 set_flash_message('Una reserva confirmada solo puede modificar la mesa y cantidad de personas', 'error');
                 redirect('index.php?action=reservas_editar&id=' . $id);
                 return;
+            }
+            
+            // Verificar si ya pasó la hora pactada
+            $fechaHoraReserva = strtotime($reservaActual['fecha'] . ' ' . $reservaActual['hora']);
+            $yaPasoHora = $fechaHoraReserva <= time();
+            
+            // Si ya pasó la hora, no se puede editar mesa ni personas
+            if ($yaPasoHora) {
+                $mesaCambio = intval($_POST['mesa_id']) != intval($reservaActual['mesa_id']);
+                $personasCambio = intval($_POST['personas']) != intval($reservaActual['personas']);
+                
+                if ($mesaCambio || $personasCambio) {
+                    set_flash_message('Después de la hora pactada no se puede editar la mesa ni la cantidad de personas. Solo puede completar o marcar como no show.', 'error');
+                    redirect('index.php?action=reservas_editar&id=' . $id);
+                    return;
+                }
             }
             
             // Si está confirmada y se cambia el estado, solo puede pasar a completada o no_show

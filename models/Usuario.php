@@ -328,4 +328,38 @@ class Usuario
 
         return $stmt;
     }
+
+    /**
+     * Actualizar datos del perfil (sin cambiar rol ni password)
+     * @return boolean True si se actualizó correctamente
+     */
+    public function actualizarPerfil()
+    {
+        $query = "UPDATE " . $this->table . " 
+                  SET nombre = :nombre,
+                      email = :email,
+                      telefono = :telefono
+                  WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitizar
+        $this->nombre = htmlspecialchars(strip_tags($this->nombre));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $this->telefono = htmlspecialchars(strip_tags($this->telefono));
+
+        // Bind
+        $stmt->bindParam(":nombre", $this->nombre);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->bindParam(":telefono", $this->telefono);
+        $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+
+        try {
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al actualizar perfil: " . $e->getMessage());
+            return false;
+        }
+    }
+
 }

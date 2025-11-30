@@ -151,7 +151,7 @@ include __DIR__ . '/../layouts/header.php';
                                     <td><?php echo date('d/m/Y H:i', strtotime($pedido['fecha_pedido'])); ?></td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="<?php echo BASE_URL; ?>index.php?action=pedidos_ver&id=<?php echo $pedido['id']; ?>" 
+                                            <a href="<?php echo BASE_URL; ?>index.php?action=pedidos_ver&id=<?php echo $pedido['id']; ?>&t=<?php echo time(); ?>" 
                                                class="btn btn-sm btn-info" title="Ver">
                                                 <i class="fas fa-eye"></i>
                                             </a>

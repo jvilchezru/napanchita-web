@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Detalle del Pedido #' . $pedido['id'];
 include __DIR__ . '/../layouts/header.php';
+
 ?>
 
 <div class="page-header">
@@ -92,19 +93,32 @@ include __DIR__ . '/../layouts/header.php';
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pedido['items'] as $item): ?>
+                            <?php 
+                            $items = $pedido['items'] ?? [];
+                            if (!empty($items) && is_array($items) && count($items) > 0): 
+                            ?>
+                                <?php foreach ($items as $item): ?>
+                                    <tr>
+                                        <td>
+                                            <?php echo htmlspecialchars($item['nombre'] ?? 'Producto'); ?>
+                                            <?php if (!empty($item['notas'])): ?>
+                                                <br><small class="text-muted"><?php echo htmlspecialchars($item['notas']); ?></small>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center"><?php echo $item['cantidad'] ?? 0; ?></td>
+                                        <td class="text-end">S/ <?php echo number_format($item['precio_unitario'] ?? 0, 2); ?></td>
+                                        <td class="text-end"><strong>S/ <?php echo number_format($item['subtotal'] ?? 0, 2); ?></strong></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td>
-                                        <?php echo htmlspecialchars($item['nombre']); ?>
-                                        <?php if ($item['notas']): ?>
-                                            <br><small class="text-muted"><?php echo htmlspecialchars($item['notas']); ?></small>
-                                        <?php endif; ?>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                        <p class="mb-0">Este pedido no tiene items registrados</p>
+                                        <small>Es posible que el pedido esté en proceso de creación</small>
                                     </td>
-                                    <td class="text-center"><?php echo $item['cantidad']; ?></td>
-                                    <td class="text-end">S/ <?php echo number_format($item['precio_unitario'], 2); ?></td>
-                                    <td class="text-end"><strong>S/ <?php echo number_format($item['subtotal'], 2); ?></strong></td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

@@ -79,19 +79,40 @@ include __DIR__ . '/../layouts/header.php';
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label"><strong>Tipo de Pedido</strong></label>
-                                <select name="tipo" id="tipoPedido" class="form-select" required>
-                                    <option value="mesa">Mesa</option>
+                                <select name="tipo" id="tipoPedido" class="form-select" required <?php echo isset($mesa_id_reserva) ? 'disabled' : ''; ?>>
+                                    <option value="mesa" selected>Mesa</option>
                                     <!-- <option value="delivery">Delivery</option> -->
-                                    <option value="para_llevar">Para Llevar</option>
+                                    <?php if (!isset($mesa_id_reserva)): ?>
+                                        <option value="para_llevar">Para Llevar</option>
+                                    <?php endif; ?>
                                 </select>
+                                <?php if (isset($mesa_id_reserva)): ?>
+                                    <input type="hidden" name="tipo" value="mesa">
+                                    <input type="hidden" name="reserva_id" value="<?php echo $reserva_id; ?>">
+                                <?php endif; ?>
                             </div>
                             <div class="col-md-3" id="mesaSelect">
                                 <label class="form-label">Mesa</label>
-                                <select name="mesa_id" id="mesa_id" class="form-select">
-                                    <option value="">Seleccionar mesa</option>
-                                    <?php foreach ($mesas as $mesa): ?>
-                                        <option value="<?php echo $mesa['id']; ?>">Mesa <?php echo $mesa['numero']; ?> (<?php echo $mesa['capacidad']; ?> pers.)</option>
-                                    <?php endforeach; ?>
+                                <select name="mesa_id" id="mesa_id" class="form-select" <?php echo isset($mesa_id_reserva) ? 'disabled' : ''; ?>>
+                                    <?php if (isset($mesa_id_reserva)): ?>
+                                        <?php 
+                                        // Buscar la mesa específica de la reserva
+                                        $mesaReserva = null;
+                                        require_once __DIR__ . '/../../models/Mesa.php';
+                                        $mesaModel = new Mesa();
+                                        $mesaModel->id = $mesa_id_reserva;
+                                        $mesaReserva = $mesaModel->obtenerPorId();
+                                        ?>
+                                        <option value="<?php echo $mesaReserva['id']; ?>" selected>
+                                            Mesa <?php echo $mesaReserva['numero']; ?> (<?php echo $mesaReserva['capacidad']; ?> pers.)
+                                        </option>
+                                        <input type="hidden" name="mesa_id" value="<?php echo $mesa_id_reserva; ?>">
+                                    <?php else: ?>
+                                        <option value="">Seleccionar mesa</option>
+                                        <?php foreach ($mesas as $mesa): ?>
+                                            <option value="<?php echo $mesa['id']; ?>">Mesa <?php echo $mesa['numero']; ?> (<?php echo $mesa['capacidad']; ?> pers.)</option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                             <div class="col-md-6" id="clienteSelect" style="display:none;">
@@ -226,6 +247,18 @@ include __DIR__ . '/../layouts/header.php';
                     <div class="card">
                         <div class="card-header bg-success text-white">
                             <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Carrito</h5>
+                            <?php if (isset($reserva_data) && $reserva_data): ?>
+                            <hr class="border-white my-2">
+                            <div style="font-size: 0.85rem;">
+                                <strong><i class="fas fa-calendar-check"></i> Desde Reserva</strong><br>
+                                <small>
+                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($reserva_data['cliente_nombre']); ?><br>
+                                    <i class="fas fa-phone"></i> <?php echo htmlspecialchars($reserva_data['cliente_telefono'] ?? 'N/A'); ?><br>
+                                    <i class="fas fa-users"></i> <?php echo $reserva_data['personas']; ?> personas | 
+                                    <i class="fas fa-clock"></i> <?php echo date('H:i', strtotime($reserva_data['hora'])); ?>
+                                </small>
+                            </div>
+                            <?php endif; ?>
                         </div>
                         <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                             <div id="carrito-items">

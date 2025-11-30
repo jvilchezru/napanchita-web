@@ -65,6 +65,18 @@ class PedidoController
     {
         AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
 
+        // Capturar parámetros si vienen desde una reserva completada
+        $mesa_id_reserva = isset($_GET['mesa_id']) ? intval($_GET['mesa_id']) : null;
+        $reserva_id = isset($_GET['reserva_id']) ? intval($_GET['reserva_id']) : null;
+        $reserva_data = null;
+
+        // Si viene de una reserva, obtener sus datos
+        if ($reserva_id) {
+            require_once __DIR__ . '/../models/Reserva.php';
+            $reservaModel = new Reserva();
+            $reserva_data = $reservaModel->obtenerPorId($reserva_id);
+        }
+
         // Obtener datos necesarios
         $platos = $this->plato->listar(true); // Solo disponibles
         $combos = $this->combo->listar(true); // Solo activos
@@ -189,6 +201,11 @@ class PedidoController
      */
     public function ver($id)
     {
+        // Prevenir caché
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Pragma: no-cache");
+        
+        // TIMESTAMP: 2025-11-30 10:50:00
         AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
 
         $this->pedido->id = $id;
@@ -198,6 +215,23 @@ class PedidoController
             $_SESSION['error'] = 'Pedido no encontrado';
             redirect('pedidos');
             return;
+        }
+
+        // FORZAR carga de items desde el controlador
+        $pedido['items'] = [];
+        $pedido['debug_controller'] = 'Ejecutando desde controlador';
+        
+        $queryItems = "SELECT * FROM pedido_items WHERE pedido_id = " . intval($id);
+        
+        try {
+            $resultItems = $this->db->query($queryItems);
+            if ($resultItems) {
+                $items = $resultItems->fetchAll(PDO::FETCH_ASSOC);
+                $pedido['items'] = $items;
+                $pedido['debug_count'] = count($items);
+            }
+        } catch (PDOException $e) {
+            $pedido['debug_error'] = $e->getMessage();
         }
 
         // Obtener información de venta si el pedido está finalizado

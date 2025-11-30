@@ -339,4 +339,128 @@ class UsuarioController
 
         json_response(['success' => true, 'data' => $usuarios]);
     }
+
+    /**
+     * Ver y editar perfil del usuario actual
+     */
+    public function perfil()
+    {
+        AuthController::verificarSesion();
+        
+        $usuario_id = $_SESSION['usuario_id'];
+        $this->usuario->id = $usuario_id;
+        $usuario = $this->usuario->obtenerPorId();
+        
+        if (!$usuario) {
+            set_flash_message('Usuario no encontrado', 'error');
+            redirect('index.php?action=dashboard');
+            return;
+        }
+        
+        require_once __DIR__ . '/../views/perfil/ver.php';
+    }
+
+    /**
+     * Actualizar datos del perfil
+     */
+    public function actualizarPerfil()
+    {
+        AuthController::verificarSesion();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('index.php?action=perfil');
+            return;
+        }
+        
+        $usuario_id = $_SESSION['usuario_id'];
+        
+        // Validar datos
+        $nombre = sanitize_input($_POST['nombre'] ?? '');
+        $email = sanitize_input($_POST['email'] ?? '');
+        $telefono = sanitize_input($_POST['telefono'] ?? '');
+        
+        if (empty($nombre)) {
+            set_flash_message('El nombre es requerido', 'error');
+            redirect('index.php?action=perfil');
+            return;
+        }
+        
+        // Verificar si el email ya existe en otro usuario
+        if (!empty($email)) {
+            $usuarioExistente = $this->usuario->obtenerPorEmail($email);
+            if ($usuarioExistente && $usuarioExistente['id'] != $usuario_id) {
+                set_flash_message('El email ya está en uso por otro usuario', 'error');
+                redirect('index.php?action=perfil');
+                return;
+            }
+        }
+        
+        // Actualizar datos
+        $this->usuario->id = $usuario_id;
+        $this->usuario->nombre = $nombre;
+        $this->usuario->email = $email;
+        $this->usuario->telefono = $telefono;
+        
+        if ($this->usuario->actualizarPerfil()) {
+            $_SESSION['usuario_nombre'] = $nombre;
+            set_flash_message('Perfil actualizado correctamente', 'success');
+            log_actividad($this->db, $usuario_id, 'ACTUALIZAR_PERFIL', 'usuarios', $usuario_id);
+        } else {
+            set_flash_message('Error al actualizar el perfil', 'error');
+        }
+        
+        redirect('index.php?action=perfil');
+    }
+
+    /**
+     * Cambiar contraseña
+     */
+    public function cambiarPassword()
+    {
+        AuthController::verificarSesion();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            json_response(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        
+        $usuario_id = $_SESSION['usuario_id'];
+        $password_actual = $_POST['password_actual'] ?? '';
+        $password_nueva = $_POST['password_nueva'] ?? '';
+        $password_confirmar = $_POST['password_confirmar'] ?? '';
+        
+        // Validaciones
+        if (empty($password_actual) || empty($password_nueva) || empty($password_confirmar)) {
+            json_response(['success' => false, 'message' => 'Todos los campos son requeridos']);
+            return;
+        }
+        
+        if ($password_nueva !== $password_confirmar) {
+            json_response(['success' => false, 'message' => 'Las contraseñas nuevas no coinciden']);
+            return;
+        }
+        
+        if (strlen($password_nueva) < 6) {
+            json_response(['success' => false, 'message' => 'La contraseña debe tener al menos 6 caracteres']);
+            return;
+        }
+        
+        // Verificar contraseña actual
+        $this->usuario->id = $usuario_id;
+        $usuario = $this->usuario->obtenerPorId();
+        if (!password_verify($password_actual, $usuario['password'])) {
+            json_response(['success' => false, 'message' => 'La contraseña actual es incorrecta']);
+            return;
+        }
+        
+        // Actualizar contraseña usando el método existente que recibe el password como parámetro
+        $this->usuario->id = $usuario_id;
+        
+        if ($this->usuario->cambiarPassword($password_nueva)) {
+            log_actividad($this->db, $usuario_id, 'CAMBIAR_PASSWORD', 'usuarios', $usuario_id);
+            json_response(['success' => true, 'message' => 'Contraseña actualizada correctamente']);
+        } else {
+            json_response(['success' => false, 'message' => 'Error al actualizar la contraseña']);
+        }
+    }
 }

@@ -132,12 +132,42 @@ class Pedido
         $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($pedido) {
-            // Obtener items del pedido
-            $pedido['items'] = $this->obtenerItemsDelPedido($this->id);
-            
             // Decodificar direcciones JSON
-            if ($pedido['cliente_direcciones']) {
+            if (isset($pedido['cliente_direcciones']) && $pedido['cliente_direcciones']) {
                 $pedido['cliente_direcciones'] = json_decode($pedido['cliente_direcciones'], true);
+            }
+            
+            // Obtener items del pedido - SIEMPRE inicializar como array
+            $pedido['items'] = [];
+            
+            try {
+                $queryItems = "SELECT 
+                                id,
+                                pedido_id,
+                                plato_id,
+                                combo_id,
+                                tipo,
+                                nombre,
+                                cantidad,
+                                precio_unitario,
+                                subtotal,
+                                notas
+                              FROM pedido_items 
+                              WHERE pedido_id = :pedido_id
+                              ORDER BY id ASC";
+                
+                $stmtItems = $this->conn->prepare($queryItems);
+                $stmtItems->bindParam(":pedido_id", $this->id, PDO::PARAM_INT);
+                
+                if ($stmtItems->execute()) {
+                    $items = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+                    if ($items !== false && is_array($items)) {
+                        $pedido['items'] = $items;
+                    }
+                }
+            } catch (PDOException $e) {
+                error_log("Error al cargar items del pedido {$this->id}: " . $e->getMessage());
+                $pedido['items'] = [];
             }
         }
 
@@ -151,15 +181,30 @@ class Pedido
      */
     public function obtenerItemsDelPedido($pedido_id)
     {
-        $query = "SELECT * FROM " . $this->table_items . " 
+        $query = "SELECT 
+                    id,
+                    pedido_id,
+                    plato_id,
+                    combo_id,
+                    tipo,
+                    nombre,
+                    cantidad,
+                    precio_unitario,
+                    subtotal,
+                    notas
+                  FROM " . $this->table_items . " 
                   WHERE pedido_id = :pedido_id
                   ORDER BY id ASC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":pedido_id", $pedido_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if ($stmt->execute()) {
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $items;
+        }
+        
+        return [];
     }
 
     /**
@@ -201,6 +246,11 @@ class Pedido
 
         $query .= " GROUP BY p.id
                     ORDER BY p.fecha_pedido DESC";
+        
+        // Aplicar límite si existe
+        if (isset($filtros['limit']) && is_numeric($filtros['limit'])) {
+            $query .= " LIMIT " . intval($filtros['limit']);
+        }
 
         $stmt = $this->conn->prepare($query);
 
@@ -407,5 +457,35 @@ class Pedido
         $this->total = $this->subtotal + $this->costo_envio - $this->descuento;
 
         return $this->actualizar();
+    }
+
+    /**
+     * Listar pedidos activos por usuario (no entregados, finalizados ni cancelados)
+     * @param int $usuario_id ID del usuario
+     * @return array Array de pedidos activos
+     */
+    public function listarPorUsuario($usuario_id)
+    {
+        $query = "SELECT p.*, 
+                         c.nombre as cliente_nombre, 
+                         c.telefono as cliente_telefono,
+                         m.numero as mesa_numero,
+                         u.nombre as usuario_nombre,
+                         COUNT(pi.id) as total_items
+                  FROM " . $this->table . " p
+                  LEFT JOIN clientes c ON p.cliente_id = c.id
+                  LEFT JOIN mesas m ON p.mesa_id = m.id
+                  LEFT JOIN usuarios u ON p.usuario_id = u.id
+                  LEFT JOIN " . $this->table_items . " pi ON p.id = pi.pedido_id
+                  WHERE p.usuario_id = :usuario_id
+                  AND p.estado NOT IN ('entregado', 'finalizado', 'cancelado')
+                  GROUP BY p.id
+                  ORDER BY p.fecha_pedido DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":usuario_id", $usuario_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
