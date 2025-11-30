@@ -313,15 +313,10 @@ include __DIR__ . '/../layouts/header.php';
                                 <?php echo ucfirst($mesa['estado']); ?>
                             </span>
                             <div class="mt-2">
-                                <button class="btn btn-sm btn-outline-primary cambiar-estado"
-                                    data-id="<?php echo $mesa['id']; ?>"
-                                    title="Cambiar estado">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
                                 <a href="<?php echo BASE_URL; ?>index.php?action=mesas_editar&id=<?php echo $mesa['id']; ?>"
                                     class="btn btn-sm btn-outline-warning"
                                     title="Editar">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit"></i> Editar
                                 </a>
                             </div>
                         </div>
@@ -368,11 +363,6 @@ include __DIR__ . '/../layouts/header.php';
                                 </td>
                                 <td>X: <?php echo $mesa['posicion_x']; ?>, Y: <?php echo $mesa['posicion_y']; ?></td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-primary cambiar-estado-lista"
-                                        data-id="<?php echo $mesa['id']; ?>"
-                                        title="Cambiar estado">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
                                     <a href="<?php echo BASE_URL; ?>index.php?action=mesas_editar&id=<?php echo $mesa['id']; ?>"
                                         class="btn btn-sm btn-outline-warning"
                                         title="Editar">

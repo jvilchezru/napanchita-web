@@ -73,7 +73,7 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=pedidos">
+                <a href="<?php echo BASE_URL; ?>index.php?action=pedidos" class="<?php echo (isset($_GET['action']) && (strpos($_GET['action'], 'pedido') !== false)) ? 'active' : ''; ?>">
                     <i class="fas fa-shopping-cart"></i> Pedidos
                 </a>
             </li>

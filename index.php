@@ -423,6 +423,87 @@ try {
                 $controller->eliminar();
                 break;
 
+            // ===== PEDIDOS (Admin y Mesero) =====
+            case 'pedidos':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->index();
+                break;
+
+            case 'pedidos_crear':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->crear();
+                break;
+
+            case 'pedidos_guardar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->guardar();
+                break;
+
+            case 'pedidos_ver':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->ver($id);
+                } else {
+                    redirect('pedidos');
+                }
+                break;
+
+            case 'pedidos_cambiarEstado':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->cambiarEstado();
+                break;
+
+            case 'pedidos_cancelar':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->cancelar($id);
+                } else {
+                    json_response(['success' => false, 'message' => 'ID no proporcionado']);
+                }
+                break;
+
+            case 'pedidos_cocina':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->cocina();
+                break;
+
+            case 'pedidos_obtenerPendientes':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->obtenerPendientes();
+                break;
+
+            case 'pedidos_buscarCliente':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->buscarCliente();
+                break;
+
+            case 'pedidos_crearClienteRapido':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/PedidoController.php';
+                $controller = new PedidoController();
+                $controller->crearClienteRapido();
+                break;
+
             // ===== HOME / PÁGINA PÚBLICA =====
             case 'home':
             default:

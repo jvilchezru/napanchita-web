@@ -60,18 +60,8 @@ include __DIR__ . '/../layouts/header.php';
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">
-                            <i class="fas fa-info-circle me-1"></i> Estado Actual <span class="text-danger">*</span>
-                        </label>
-                        <select class="form-select" id="estado" name="estado" required>
-                            <option value="disponible" <?php echo $mesa['estado'] === 'disponible' ? 'selected' : ''; ?>>Disponible</option>
-                            <option value="ocupada" <?php echo $mesa['estado'] === 'ocupada' ? 'selected' : ''; ?>>Ocupada</option>
-                            <option value="reservada" <?php echo $mesa['estado'] === 'reservada' ? 'selected' : ''; ?>>Reservada</option>
-                            <option value="inactiva" <?php echo $mesa['estado'] === 'inactiva' ? 'selected' : ''; ?>>Inactiva</option>
-                        </select>
-                        <small class="form-text text-muted">Estado actual de la mesa</small>
-                    </div>
+                    <!-- Estado oculto -->
+                    <input type="hidden" name="estado" value="<?php echo $mesa['estado']; ?>">
 
                     <hr>
                     <h6><i class="fas fa-map-marker-alt me-2"></i> Posición en el Layout</h6>
@@ -107,13 +97,20 @@ include __DIR__ . '/../layouts/header.php';
                             <input class="form-check-input" type="checkbox" id="activo" name="activo" value="1"
                                 <?php
                                 $activo = isset($mesa['activo']) ? (int)$mesa['activo'] : 0;
+                                $estadoBloqueado = in_array($mesa['estado'], ['ocupada', 'reservada']);
                                 echo ($activo === 1) ? 'checked' : '';
+                                echo $estadoBloqueado ? ' disabled' : '';
                                 ?>>
                             <label class="form-check-label" for="activo">
                                 <i class="fas fa-check-circle text-success me-1"></i> Mesa activa
                             </label>
                             <small class="form-text text-muted d-block">
-                                Si está desactivada, no aparecerá en el layout
+                                <?php if ($estadoBloqueado): ?>
+                                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                    No se puede desactivar una mesa que está <strong><?php echo $mesa['estado']; ?></strong>
+                                <?php else: ?>
+                                    Si desmarcas esta opción, la mesa se marcará como "Inactiva" y no aparecerá disponible para pedidos ni en el layout
+                                <?php endif; ?>
                             </small>
                         </div>
                     </div>

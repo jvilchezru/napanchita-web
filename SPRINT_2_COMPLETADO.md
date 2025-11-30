@@ -1,0 +1,392 @@
+# SPRINT 2 - PRODUCTOS Y CATEGORÍAS ✅ COMPLETADO
+
+**Fecha de Completado:** 29 de Noviembre, 2025  
+**Estado:** COMPLETADO  
+**Duración:** 2 semanas (Semana 3-4)
+
+---
+
+## 📋 RESUMEN
+
+Sprint 2 ha sido completado exitosamente. Se implementó el sistema completo de gestión de productos, categorías y combos, permitiendo al administrador organizar y mantener el catálogo de la cevichería.
+
+---
+
+## ✅ USER STORIES IMPLEMENTADAS
+
+### US-004: Gestión de Categorías
+**Estado:** ✅ Completado
+
+El administrador puede:
+- Crear nuevas categorías (Ceviches, Chicharrones, Jaleas, etc.)
+- Editar categorías existentes
+- Activar/desactivar categorías
+- Eliminar categorías (solo si no tienen productos)
+- Ordenar categorías de forma personalizada
+- Ver cantidad de productos por categoría
+
+**Archivos:**
+- Controller: `controllers/CategoriaController.php`
+- Model: `models/Categoria.php`
+- Views: `views/categorias/index.php`, `crear.php`, `editar.php`
+
+### US-005: Gestión de Productos
+**Estado:** ✅ Completado
+
+El administrador puede:
+- Crear productos con nombre, descripción, precio e imagen
+- Asignar productos a categorías
+- Subir y gestionar imágenes de productos
+- Editar productos existentes
+- Marcar productos como disponible/no disponible
+- Eliminar productos
+- Filtrar productos por categoría
+- Búsqueda de productos
+
+**Archivos:**
+- Controller: `controllers/ProductoController.php`
+- Model: `models/Producto.php`
+- Views: `views/productos/index.php`, `crear.php`, `editar.php`
+- Upload Directory: `public/images/productos/`
+
+### US-006: Sistema de Combos
+**Estado:** ✅ Completado
+
+El administrador puede:
+- Crear combos con nombre, descripción y precio especial
+- Agregar múltiples productos a un combo con cantidades
+- Subir imágenes de combos
+- Activar/desactivar combos
+- Editar combos y sus productos
+- Eliminar combos
+- Ver productos incluidos en cada combo
+
+**Archivos:**
+- Controller: `controllers/ComboController.php`
+- Model: `models/Combo.php`
+- Views: `views/combos/index.php`, `crear.php`, `editar.php`
+- Upload Directory: `public/images/combos/`
+
+---
+
+## 🗄️ BASE DE DATOS
+
+### Tablas Implementadas
+
+**1. categorias**
+```sql
+- id (PK)
+- nombre (UNIQUE)
+- descripcion
+- orden (para ordenamiento personalizado)
+- activo (boolean)
+```
+
+**2. productos**
+```sql
+- id (PK)
+- categoria_id (FK)
+- nombre
+- descripcion
+- precio (DECIMAL 10,2)
+- imagen_url
+- disponible (boolean)
+- fecha_creacion
+```
+
+**3. combos**
+```sql
+- id (PK)
+- nombre
+- descripcion
+- precio (DECIMAL 10,2)
+- imagen_url
+- activo (boolean)
+- fecha_creacion
+```
+
+**4. combo_productos** (tabla de relación N:M)
+```sql
+- id (PK)
+- combo_id (FK)
+- producto_id (FK)
+- cantidad (INT)
+- UNIQUE(combo_id, producto_id)
+```
+
+---
+
+## 🔧 FUNCIONALIDADES TÉCNICAS IMPLEMENTADAS
+
+### Upload de Imágenes
+- ✅ Validación de tipo de archivo (JPG, PNG, GIF)
+- ✅ Validación de tamaño máximo (5MB)
+- ✅ Generación de nombres únicos
+- ✅ Almacenamiento en directorios separados
+- ✅ Eliminación automática al eliminar registros
+- ✅ Preview de imágenes en formularios
+
+### Validaciones
+- ✅ Validación de campos requeridos
+- ✅ Validación de nombres únicos en categorías
+- ✅ Validación de precios (deben ser > 0)
+- ✅ Sanitización de inputs (XSS protection)
+- ✅ Validación de relaciones (no eliminar categorías con productos)
+
+### Interfaz de Usuario
+- ✅ DataTables con búsqueda y paginación
+- ✅ Filtros por categoría y estado
+- ✅ Acciones AJAX (activar/desactivar, eliminar)
+- ✅ SweetAlert2 para confirmaciones
+- ✅ Mensajes flash de éxito/error
+- ✅ Badges de estado visuales
+- ✅ Diseño responsive
+
+### Seguridad
+- ✅ Autenticación requerida (sesión activa)
+- ✅ Autorización (solo admin)
+- ✅ Protección CSRF en formularios
+- ✅ Sanitización de datos
+- ✅ Prepared statements en consultas SQL
+- ✅ Logs de actividad
+
+---
+
+## 📁 ESTRUCTURA DE ARCHIVOS
+
+```
+napanchita-web/
+├── controllers/
+│   ├── CategoriaController.php ✅
+│   ├── ProductoController.php ✅
+│   └── ComboController.php ✅
+├── models/
+│   ├── Categoria.php ✅
+│   ├── Producto.php ✅
+│   └── Combo.php ✅
+├── views/
+│   ├── categorias/
+│   │   ├── index.php ✅
+│   │   ├── crear.php ✅
+│   │   └── editar.php ✅
+│   ├── productos/
+│   │   ├── index.php ✅
+│   │   ├── crear.php ✅
+│   │   └── editar.php ✅
+│   └── combos/
+│       ├── index.php ✅
+│       ├── crear.php ✅
+│       └── editar.php ✅
+├── public/
+│   └── images/
+│       ├── productos/ (directorio de imágenes)
+│       └── combos/ (directorio de imágenes)
+└── database/
+    └── schema_completo.sql ✅
+```
+
+---
+
+## 🧪 PRUEBAS A REALIZAR
+
+### 1. Gestión de Categorías
+
+**Crear Categoría:**
+1. Iniciar sesión como admin
+2. Ir a "Categorías" en el menú lateral
+3. Click en "Nueva Categoría"
+4. Llenar: Nombre, Descripción, Orden
+5. Marcar como "Activa"
+6. Guardar
+7. ✅ Verificar que aparece en la lista
+
+**Editar Categoría:**
+1. En la lista de categorías, click en el botón de editar (ícono lápiz)
+2. Modificar campos
+3. Guardar
+4. ✅ Verificar cambios aplicados
+
+**Activar/Desactivar:**
+1. Click en botón de estado (ícono ban/check)
+2. Confirmar acción
+3. ✅ Verificar cambio de badge de estado
+
+**Eliminar:**
+1. Click en botón eliminar (ícono basura)
+2. Confirmar en SweetAlert
+3. ✅ Verificar eliminación (solo si no tiene productos)
+
+### 2. Gestión de Productos
+
+**Crear Producto:**
+1. Ir a "Productos"
+2. Click en "Nuevo Producto"
+3. Seleccionar categoría
+4. Llenar: Nombre, Descripción, Precio
+5. Subir imagen (opcional)
+6. Marcar como "Disponible"
+7. Guardar
+8. ✅ Verificar que aparece en la lista con su imagen
+
+**Editar Producto:**
+1. Click en editar
+2. Modificar campos
+3. Cambiar imagen (opcional)
+4. Guardar
+5. ✅ Verificar cambios
+
+**Filtrar por Categoría:**
+1. Usar el dropdown de "Filtrar por Categoría"
+2. ✅ Verificar que solo aparecen productos de esa categoría
+
+**Cambiar Disponibilidad:**
+1. Click en botón de disponibilidad
+2. ✅ Verificar cambio de estado
+
+### 3. Sistema de Combos
+
+**Crear Combo:**
+1. Ir a "Combos"
+2. Click en "Nuevo Combo"
+3. Llenar: Nombre, Descripción, Precio
+4. Subir imagen (opcional)
+5. Agregar productos:
+   - Seleccionar producto del dropdown
+   - Especificar cantidad
+   - Click en "Agregar Producto"
+6. Repetir para múltiples productos
+7. Marcar como "Activo"
+8. Guardar
+9. ✅ Verificar que aparece con lista de productos
+
+**Editar Combo:**
+1. Click en editar combo
+2. Modificar datos
+3. Agregar/eliminar productos
+4. Guardar
+5. ✅ Verificar cambios
+
+**Ver Productos del Combo:**
+1. En la lista de combos
+2. ✅ Verificar que se muestra la lista de productos incluidos
+
+---
+
+## 🌐 URLS DE ACCESO
+
+### Categorías
+- **Listado:** `http://localhost/napanchita-web/index.php?action=categorias`
+- **Crear:** `http://localhost/napanchita-web/index.php?action=categorias_crear`
+- **Editar:** `http://localhost/napanchita-web/index.php?action=categorias_editar&id=X`
+
+### Productos
+- **Listado:** `http://localhost/napanchita-web/index.php?action=productos`
+- **Crear:** `http://localhost/napanchita-web/index.php?action=productos_crear`
+- **Editar:** `http://localhost/napanchita-web/index.php?action=productos_editar&id=X`
+
+### Combos
+- **Listado:** `http://localhost/napanchita-web/index.php?action=combos`
+- **Crear:** `http://localhost/napanchita-web/index.php?action=combos_crear`
+- **Editar:** `http://localhost/napanchita-web/index.php?action=combos_editar&id=X`
+
+---
+
+## 📊 DATOS DE PRUEBA INICIALES
+
+La base de datos ya incluye:
+- ✅ 7 categorías pre-cargadas
+- ✅ 20 productos de ejemplo
+- ✅ 3 combos de ejemplo
+
+Puedes probar con estos datos o crear nuevos.
+
+---
+
+## 🔍 VERIFICACIÓN DE SINTAXIS
+
+Todos los archivos PHP han sido verificados sin errores de sintaxis:
+
+```bash
+✅ controllers/CategoriaController.php - No syntax errors
+✅ controllers/ProductoController.php - No syntax errors
+✅ controllers/ComboController.php - No syntax errors
+✅ models/Categoria.php - No syntax errors
+✅ models/Producto.php - No syntax errors
+✅ models/Combo.php - No syntax errors
+```
+
+---
+
+## 🚀 SIGUIENTE SPRINT
+
+### Sprint 3: GESTIÓN DE PEDIDOS (Semana 5-6)
+
+**Objetivos:**
+- Implementar sistema de pedidos multi-canal (mesa, delivery, para llevar)
+- Crear interfaz POS para tomar pedidos
+- Desarrollar vista de cocina para seguimiento
+- Integrar productos y combos en pedidos
+
+**Módulos a desarrollar:**
+- PedidoController
+- ClienteController (completar)
+- Vistas de pedidos
+- Dashboard de cocina
+
+---
+
+## 📝 NOTAS ADICIONALES
+
+### Recomendaciones para Testing
+
+1. **Probar con XAMPP corriendo:**
+   - Apache debe estar activo
+   - MySQL debe estar activo
+   - Base de datos `napanchita_db` debe estar creada
+
+2. **Usuario de prueba:**
+   - Email: `admin@napanchita.com`
+   - Password: `password123`
+   - Rol: admin
+
+3. **Permisos de carpetas:**
+   - Verificar que `public/images/productos/` tiene permisos de escritura
+   - Verificar que `public/images/combos/` tiene permisos de escritura
+
+4. **Navegadores recomendados:**
+   - Chrome (última versión)
+   - Firefox (última versión)
+
+### Posibles Mejoras Futuras (Backlog)
+
+- [ ] Drag & drop para ordenar categorías
+- [ ] Importación masiva de productos (CSV/Excel)
+- [ ] Múltiples imágenes por producto (galería)
+- [ ] Etiquetas/tags para productos
+- [ ] Control de stock/inventario
+- [ ] Productos con variantes (tamaños)
+- [ ] Descuentos por tiempo limitado
+- [ ] Recomendaciones de productos relacionados
+
+---
+
+## ✅ CHECKLIST FINAL SPRINT 2
+
+- [x] Base de datos actualizada con todas las tablas
+- [x] Modelos implementados y funcionales
+- [x] Controladores con CRUD completo
+- [x] Vistas responsivas y funcionales
+- [x] Upload de imágenes implementado
+- [x] Validaciones frontend y backend
+- [x] Seguridad y autorización
+- [x] Integración en sidebar y routing
+- [x] Pruebas de sintaxis pasadas
+- [x] Documentación actualizada
+
+---
+
+**Estado Final:** ✅ SPRINT 2 COMPLETADO AL 100%
+
+**Preparado por:** Jesus Vilchez  
+**Fecha:** 29 de Noviembre, 2025  
+**Próximo Sprint:** Sprint 3 - Gestión de Pedidos

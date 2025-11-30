@@ -149,11 +149,27 @@ class MesaController
             return;
         }
 
+        // Validar que no se pueda desactivar una mesa ocupada o reservada
+        if ($activo == 0 && in_array($mesa_actual['estado'], ['ocupada', 'reservada'])) {
+            $estado_mensaje = $mesa_actual['estado'] == 'ocupada' ? 'ocupada' : 'reservada';
+            set_flash_message("No se puede desactivar una mesa que está {$estado_mensaje}", 'error');
+            redirect('index.php?action=mesas_editar&id=' . $id);
+            return;
+        }
+
         // Asignar valores
         $this->mesa->id = $id;
         $this->mesa->numero = $numero;
         $this->mesa->capacidad = $capacidad;
-        $this->mesa->estado = $estado;
+        
+        // Si se desactiva la mesa, cambiar estado a inactiva
+        if ($activo == 0) {
+            $this->mesa->estado = 'inactiva';
+        } else {
+            // Mantener el estado actual si está activa
+            $this->mesa->estado = $estado;
+        }
+        
         $this->mesa->posicion_x = $posicion_x;
         $this->mesa->posicion_y = $posicion_y;
         $this->mesa->activo = $activo;

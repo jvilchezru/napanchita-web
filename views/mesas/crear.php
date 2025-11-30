@@ -57,18 +57,8 @@ include __DIR__ . '/../layouts/header.php';
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">
-                            <i class="fas fa-info-circle me-1"></i> Estado Inicial <span class="text-danger">*</span>
-                        </label>
-                        <select class="form-select" id="estado" name="estado" required>
-                            <option value="disponible" selected>Disponible</option>
-                            <option value="ocupada">Ocupada</option>
-                            <option value="reservada">Reservada</option>
-                            <option value="inactiva">Inactiva</option>
-                        </select>
-                        <small class="form-text text-muted">Estado actual de la mesa</small>
-                    </div>
+                    <!-- Estado siempre disponible al crear -->
+                    <input type="hidden" name="estado" value="disponible">
 
                     <hr>
                     <h6><i class="fas fa-map-marker-alt me-2"></i> Posición en el Layout</h6>

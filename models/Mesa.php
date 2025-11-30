@@ -20,10 +20,14 @@ class Mesa
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($db = null)
     {
-        $database = new Database();
-        $this->db = $database->getConnection();
+        if ($db) {
+            $this->db = $db;
+        } else {
+            $database = new Database();
+            $this->db = $database->getConnection();
+        }
     }
 
     /**
@@ -62,6 +66,39 @@ class Mesa
             $stmt->bindParam(':capacidad_min', $capacidadMin);
         }
 
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Listar mesas disponibles para pedidos
+     * Solo mesas activas y en estado 'disponible'
+     * 
+     * @return array Lista de mesas disponibles
+     */
+    public function listarDisponibles()
+    {
+        $query = "SELECT * FROM " . $this->table . " 
+                    WHERE activo = 1 AND estado = 'disponible'
+                    ORDER BY numero ASC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Listar mesas activas (todas las activas sin importar estado)
+     * 
+     * @return array Lista de mesas activas
+     */
+    public function listarActivas()
+    {
+        $query = "SELECT * FROM " . $this->table . " 
+                    WHERE activo = 1 
+                    ORDER BY numero ASC";
+
+        $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
