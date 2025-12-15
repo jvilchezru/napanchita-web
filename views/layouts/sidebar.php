@@ -104,7 +104,6 @@
         <?php endif; ?>
         */ ?>
 
-        <?php /* TEMPORALMENTE OCULTO - MÓDULOS FINANZAS Y REPORTES
         <!-- Ventas y Reportes (Solo Admin) -->
         <?php if (has_role(ROL_ADMIN)): ?>
             <li class="mt-3">
@@ -112,13 +111,13 @@
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=ventas">
+                <a href="<?php echo BASE_URL; ?>index.php?action=ventas" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'venta') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-cash-register"></i> Ventas
                 </a>
             </li>
 
             <li>
-                <a href="<?php echo BASE_URL; ?>index.php?action=cierres_caja">
+                <a href="<?php echo BASE_URL; ?>index.php?action=cierre_caja" class="<?php echo (isset($_GET['action']) && strpos($_GET['action'], 'cierre') !== false) ? 'active' : ''; ?>">
                     <i class="fas fa-file-invoice-dollar"></i> Cierres de Caja
                 </a>
             </li>
@@ -141,17 +140,18 @@
 
             <li>
                 <a href="<?php echo BASE_URL; ?>index.php?action=reportes_clientes">
-                    <i class="fas fa-user-chart"></i> Clientes Frecuentes
+                    <i class="fas fa-user-friends"></i> Clientes Frecuentes
                 </a>
             </li>
 
+            <!-- Log de Actividad - Oculto
             <li>
                 <a href="<?php echo BASE_URL; ?>index.php?action=logs">
                     <i class="fas fa-history"></i> Log de Actividad
                 </a>
             </li>
+            -->
         <?php endif; ?>
-        */ ?>
 
         <!-- Configuración -->
         <li class="mt-3">

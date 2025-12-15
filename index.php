@@ -82,23 +82,23 @@ try {
                         require_once __DIR__ . '/models/Mesa.php';
                         require_once __DIR__ . '/models/Pedido.php';
                         require_once __DIR__ . '/models/Reserva.php';
-                        
+
                         $database = new Database();
                         $db = $database->getConnection();
-                        
+
                         $mesaModel = new Mesa($db);
                         $pedidoModel = new Pedido($db);
                         $reservaModel = new Reserva($db);
-                        
+
                         // Obtener todas las mesas activas
                         $mesas = $mesaModel->listar(true);
-                        
+
                         // Obtener pedidos activos del mesero
                         $pedidos_activos = $pedidoModel->listarPorUsuario($_SESSION['usuario_id']);
-                        
+
                         // Obtener reservas del día
                         $reservas_hoy = $reservaModel->listarPorFecha(date('Y-m-d'));
-                        
+
                         require_once __DIR__ . '/views/dashboard/mesero.php';
                         break;
                     case ROL_REPARTIDOR:
@@ -572,16 +572,16 @@ try {
                     $database = new Database();
                     $db = $database->getConnection();
                     $pedidoModel = new Pedido($db);
-                    
+
                     $pedidoModel->id = $id;
                     $pedido = $pedidoModel->obtenerPorId();
-                    
+
                     if (!$pedido) {
                         $_SESSION['error'] = 'Pedido no encontrado';
                         redirect('pedidos');
                         exit;
                     }
-                    
+
                     // Cargar venta si está finalizado
                     $venta = null;
                     if ($pedido['estado'] === 'finalizado') {
@@ -596,7 +596,7 @@ try {
                         $stmt->execute();
                         $venta = $stmt->fetch(PDO::FETCH_ASSOC);
                     }
-                    
+
                     require_once __DIR__ . '/views/pedidos/ver.php';
                 } else {
                     redirect('pedidos');
@@ -771,6 +771,20 @@ try {
                 $controller->guardar();
                 break;
 
+            case 'ventas_ver':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->ver();
+                break;
+
+            case 'ventas_imprimir':
+                AuthController::verificarRol([ROL_ADMIN, ROL_MESERO]);
+                require_once __DIR__ . '/controllers/VentaController.php';
+                $controller = new VentaController();
+                $controller->imprimir();
+                break;
+
             case 'cierre_caja':
                 AuthController::verificarAdmin();
                 require_once __DIR__ . '/controllers/VentaController.php';
@@ -798,6 +812,34 @@ try {
                 require_once __DIR__ . '/controllers/ReporteController.php';
                 $controller = new ReporteController();
                 $controller->platos();
+                break;
+
+            case 'reportes_clientes':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->clientes();
+                break;
+
+            case 'reportes_ventas_pdf':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->ventasPdf();
+                break;
+
+            case 'reportes_platos_pdf':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->platosPdf();
+                break;
+
+            case 'reportes_clientes_pdf':
+                AuthController::verificarAdmin();
+                require_once __DIR__ . '/controllers/ReporteController.php';
+                $controller = new ReporteController();
+                $controller->clientesPdf();
                 break;
 
             // ===== HOME / PÁGINA PÚBLICA =====

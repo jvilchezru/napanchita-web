@@ -12,15 +12,14 @@ class Venta
     public $id;
     public $pedido_id;
     public $total;
-    public $metodo_pago;
+    public $metodo_pago_id;
     public $monto_recibido;
     public $monto_cambio;
-    public $descuento;
+    public $descuento_aplicado;
+    public $codigo_descuento;
     public $usuario_id;
     public $fecha_venta;
-    public $comprobante_tipo;
-    public $comprobante_numero;
-    public $notas;
+    public $ticket_generado;
 
     public function __construct($db = null)
     {
@@ -41,10 +40,12 @@ class Venta
                     v.*,
                     u.nombre as usuario_nombre,
                     p.tipo as pedido_tipo,
-                    p.estado as pedido_estado
+                    p.estado as pedido_estado,
+                    mp.nombre as metodo_pago_nombre
                 FROM " . $this->table . " v
                 LEFT JOIN usuarios u ON v.usuario_id = u.id
                 LEFT JOIN pedidos p ON v.pedido_id = p.id
+                LEFT JOIN metodos_pago mp ON v.metodo_pago_id = mp.id
                 WHERE 1=1";
 
         $params = [];
@@ -59,9 +60,9 @@ class Venta
             $params[':fecha_hasta'] = $filtros['fecha_hasta'];
         }
 
-        if (isset($filtros['metodo_pago']) && $filtros['metodo_pago']) {
-            $query .= " AND v.metodo_pago = :metodo_pago";
-            $params[':metodo_pago'] = $filtros['metodo_pago'];
+        if (isset($filtros['metodo_pago_id']) && $filtros['metodo_pago_id']) {
+            $query .= " AND v.metodo_pago_id = :metodo_pago_id";
+            $params[':metodo_pago_id'] = $filtros['metodo_pago_id'];
         }
 
         if (isset($filtros['usuario_id']) && $filtros['usuario_id']) {
@@ -72,7 +73,7 @@ class Venta
         $query .= " ORDER BY v.fecha_venta DESC";
 
         $stmt = $this->db->prepare($query);
-        
+
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
@@ -89,10 +90,13 @@ class Venta
         $query = "SELECT 
                     v.*,
                     u.nombre as usuario_nombre,
-                    p.tipo as pedido_tipo
+                    p.tipo as pedido_tipo,
+                    p.estado as pedido_estado,
+                    mp.nombre as metodo_pago_nombre
                 FROM " . $this->table . " v
                 LEFT JOIN usuarios u ON v.usuario_id = u.id
                 LEFT JOIN pedidos p ON v.pedido_id = p.id
+                LEFT JOIN metodos_pago mp ON v.metodo_pago_id = mp.id
                 WHERE v.id = :id
                 LIMIT 1";
 
@@ -109,26 +113,24 @@ class Venta
     public function crear()
     {
         $query = "INSERT INTO " . $this->table . " 
-                    (pedido_id, total, metodo_pago, monto_recibido, monto_cambio, 
-                     descuento, usuario_id, comprobante_tipo, comprobante_numero, notas) 
+                    (pedido_id, total, metodo_pago_id, monto_recibido, monto_cambio, 
+                     descuento_aplicado, codigo_descuento, usuario_id) 
                     VALUES 
-                    (:pedido_id, :total, :metodo_pago, :monto_recibido, :monto_cambio,
-                     :descuento, :usuario_id, :comprobante_tipo, :comprobante_numero, :notas)";
+                    (:pedido_id, :total, :metodo_pago_id, :monto_recibido, :monto_cambio,
+                     :descuento_aplicado, :codigo_descuento, :usuario_id)";
 
         $stmt = $this->db->prepare($query);
 
-        $this->notas = htmlspecialchars(strip_tags($this->notas ?? ''));
+        $this->codigo_descuento = htmlspecialchars(strip_tags($this->codigo_descuento ?? ''));
 
         $stmt->bindParam(':pedido_id', $this->pedido_id);
         $stmt->bindParam(':total', $this->total);
-        $stmt->bindParam(':metodo_pago', $this->metodo_pago);
+        $stmt->bindParam(':metodo_pago_id', $this->metodo_pago_id);
         $stmt->bindParam(':monto_recibido', $this->monto_recibido);
         $stmt->bindParam(':monto_cambio', $this->monto_cambio);
-        $stmt->bindParam(':descuento', $this->descuento);
+        $stmt->bindParam(':descuento_aplicado', $this->descuento_aplicado);
+        $stmt->bindParam(':codigo_descuento', $this->codigo_descuento);
         $stmt->bindParam(':usuario_id', $this->usuario_id);
-        $stmt->bindParam(':comprobante_tipo', $this->comprobante_tipo);
-        $stmt->bindParam(':comprobante_numero', $this->comprobante_numero);
-        $stmt->bindParam(':notas', $this->notas);
 
         if ($stmt->execute()) {
             $this->id = $this->db->lastInsertId();
@@ -159,12 +161,13 @@ class Venta
         if (!$fecha_hasta) $fecha_hasta = date('Y-m-d');
 
         $query = "SELECT 
-                    metodo_pago,
+                    mp.nombre as metodo_pago,
                     COUNT(*) as cantidad,
-                    SUM(total) as total
-                FROM " . $this->table . " 
-                WHERE DATE(fecha_venta) BETWEEN :fecha_desde AND :fecha_hasta
-                GROUP BY metodo_pago";
+                    SUM(v.total) as total
+                FROM " . $this->table . " v
+                LEFT JOIN metodos_pago mp ON v.metodo_pago_id = mp.id 
+                WHERE DATE(v.fecha_venta) BETWEEN :fecha_desde AND :fecha_hasta
+                GROUP BY v.metodo_pago_id, mp.nombre";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':fecha_desde', $fecha_desde);
@@ -186,7 +189,7 @@ class Venta
                     COUNT(*) as total_ventas,
                     SUM(total) as total_ingresos,
                     AVG(total) as ticket_promedio,
-                    SUM(descuento) as total_descuentos
+                    SUM(descuento_aplicado) as total_descuentos
                 FROM " . $this->table . " 
                 WHERE DATE(fecha_venta) BETWEEN :fecha_desde AND :fecha_hasta";
 

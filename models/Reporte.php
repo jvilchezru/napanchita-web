@@ -31,7 +31,7 @@ class Reporte
                     COALESCE(SUM(total), 0) as total_ingresos
                 FROM ventas 
                 WHERE DATE(fecha_venta) = :fecha";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->execute();
@@ -44,7 +44,7 @@ class Reporte
                 FROM pedidos 
                 WHERE DATE(fecha_pedido) = :fecha
                 GROUP BY estado";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->execute();
@@ -79,19 +79,19 @@ class Reporte
         if (!$fecha_hasta) $fecha_hasta = date('Y-m-t');
 
         $query = "SELECT 
-                    pl.id,
-                    pl.nombre,
-                    pl.precio,
-                    c.nombre as categoria_nombre,
-                    COUNT(pi.id) as cantidad_vendida,
+                    pi.nombre as nombre,
+                    MAX(pl.precio) as precio,
+                    MAX(c.nombre) as categoria_nombre,
+                    SUM(pi.cantidad) as cantidad_vendida,
                     SUM(pi.subtotal) as total_ingresos
                 FROM pedido_items pi
-                INNER JOIN platos pl ON pi.plato_id = pl.id
-                LEFT JOIN categorias c ON pl.categoria_id = c.id
                 INNER JOIN pedidos p ON pi.pedido_id = p.id
+                LEFT JOIN platos pl ON pi.nombre = pl.nombre
+                LEFT JOIN categorias c ON pl.categoria_id = c.id
                 WHERE DATE(p.fecha_pedido) BETWEEN :fecha_desde AND :fecha_hasta
-                AND p.estado != 'Cancelado'
-                GROUP BY pl.id, pl.nombre, pl.precio, c.nombre
+                    AND p.estado != 'Cancelado'
+                    AND (pi.tipo = 'producto' OR pi.tipo = '')
+                GROUP BY pi.nombre
                 ORDER BY cantidad_vendida DESC
                 LIMIT :limit";
 
@@ -109,7 +109,7 @@ class Reporte
      */
     public function obtenerVentasPorPeriodo($fecha_desde, $fecha_hasta, $agrupacion = 'dia')
     {
-        $formato = match($agrupacion) {
+        $formato = match ($agrupacion) {
             'hora' => '%Y-%m-%d %H:00:00',
             'dia' => '%Y-%m-%d',
             'semana' => '%Y-%U',
@@ -146,15 +146,16 @@ class Reporte
         $query = "SELECT 
                     c.id,
                     c.nombre as categoria,
-                    COUNT(DISTINCT pi.id) as cantidad_vendida,
-                    SUM(pi.subtotal) as total_ingresos
+                    COALESCE(COUNT(pi.id), 0) as cantidad_vendida,
+                    COALESCE(SUM(pi.subtotal), 0) as total_ingresos
                 FROM categorias c
-                LEFT JOIN platos pl ON c.id = pl.categoria_id
-                LEFT JOIN pedido_items pi ON pl.id = pi.plato_id
-                LEFT JOIN pedidos p ON pi.pedido_id = p.id
+                INNER JOIN platos pl ON c.id = pl.categoria_id
+                INNER JOIN pedido_items pi ON pl.nombre = pi.nombre AND pi.tipo = 'producto'
+                INNER JOIN pedidos p ON pi.pedido_id = p.id
                 WHERE DATE(p.fecha_pedido) BETWEEN :fecha_desde AND :fecha_hasta
-                AND p.estado != 'Cancelado'
+                    AND p.estado != 'Cancelado'
                 GROUP BY c.id, c.nombre
+                HAVING total_ingresos > 0
                 ORDER BY total_ingresos DESC";
 
         $stmt = $this->db->prepare($query);
