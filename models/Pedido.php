@@ -109,10 +109,14 @@ class Pedido
 
     /**
      * Obtener pedido por ID con items
+     * @param int $id ID del pedido
      * @return array|false Array con datos del pedido o false
      */
-    public function obtenerPorId()
+    public function obtenerPorId($id = null)
     {
+        // Si se pasa el ID como parámetro, usarlo; si no, usar $this->id
+        $pedido_id = $id ?? $this->id;
+        
         $query = "SELECT p.*, 
                          c.nombre as cliente_nombre, 
                          c.telefono as cliente_telefono,
@@ -126,7 +130,7 @@ class Pedido
                   WHERE p.id = :id LIMIT 1";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+        $stmt->bindParam(":id", $pedido_id, PDO::PARAM_INT);
         $stmt->execute();
 
         $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -157,7 +161,7 @@ class Pedido
                               ORDER BY id ASC";
                 
                 $stmtItems = $this->conn->prepare($queryItems);
-                $stmtItems->bindParam(":pedido_id", $this->id, PDO::PARAM_INT);
+                $stmtItems->bindParam(":pedido_id", $pedido_id, PDO::PARAM_INT);
                 
                 if ($stmtItems->execute()) {
                     $items = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
@@ -166,7 +170,7 @@ class Pedido
                     }
                 }
             } catch (PDOException $e) {
-                error_log("Error al cargar items del pedido {$this->id}: " . $e->getMessage());
+                error_log("Error al cargar items del pedido {$pedido_id}: " . $e->getMessage());
                 $pedido['items'] = [];
             }
         }
