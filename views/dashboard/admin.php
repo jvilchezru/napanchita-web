@@ -87,6 +87,7 @@ $mesasReservadas = $estadoMesas['reservadas'] ?? 0;
     ?>
     
     <!-- Platos Más Vendidos -->
+    <?php if (!empty($platosTop)): ?>
     <div class="col-md-12">
         <div class="card">
             <div class="card-header bg-warning text-dark">
@@ -94,26 +95,20 @@ $mesasReservadas = $estadoMesas['reservadas'] ?? 0;
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
-                    <?php if (!empty($platosTop)): ?>
-                        <?php foreach ($platosTop as $index => $plato): ?>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>
-                                    <strong class="text-primary me-2">#<?php echo $index + 1; ?></strong>
-                                    <?php echo htmlspecialchars($plato['nombre']); ?>
-                                </span>
-                                <span class="badge bg-primary rounded-pill fs-6"><?php echo $plato['cantidad']; ?> pedidos</span>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="list-group-item text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                            No hay datos disponibles
+                    <?php foreach ($platosTop as $index => $plato): ?>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong class="text-primary me-2">#<?php echo $index + 1; ?></strong>
+                                <?php echo htmlspecialchars($plato['nombre']); ?>
+                            </span>
+                            <span class="badge bg-primary rounded-pill fs-6"><?php echo $plato['cantidad']; ?> pedidos</span>
                         </div>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <div class="row mt-4">
