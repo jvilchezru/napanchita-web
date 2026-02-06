@@ -492,4 +492,26 @@ class Pedido
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Listar pedidos de un cliente (para portal web)
+     */
+    public function listarPorCliente($cliente_id)
+    {
+        $query = "SELECT p.*,
+                         COUNT(pi.id) as total_items
+                  FROM " . $this->table . " p
+                  LEFT JOIN " . $this->table_items . " pi ON p.id = pi.pedido_id
+                  WHERE p.cliente_id = :cliente_id
+                  GROUP BY p.id
+                  ORDER BY p.fecha_pedido DESC
+                  LIMIT 50";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":cliente_id", $cliente_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+

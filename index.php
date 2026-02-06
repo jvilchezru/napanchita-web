@@ -48,8 +48,8 @@ try {
         switch ($action) {
             // ===== AUTENTICACIÓN =====
             case 'login':
-                $controller = new AuthController();
-                $controller->mostrarLogin();
+                // Mostrar login unificado (clientes + staff)
+                require_once __DIR__ . '/views/login-unificado.php';
                 break;
 
             case 'procesarLogin':
@@ -845,11 +845,58 @@ try {
             // ===== HOME / PÁGINA PÚBLICA =====
             case 'home':
             default:
-                // Si ya está logueado, redirigir al dashboard
+                // Si ya está logueado como usuario staff, redirigir al dashboard
                 if (is_logged_in()) {
                     redirect('dashboard');
+                }
+                // Mostrar portal de clientes (página principal)
+                else {
+                    require_once __DIR__ . '/controllers/PortalController.php';
+                    $controller = new PortalController();
+                    $controller->index();
+                }
+                break;
+
+            // ===== PORTAL DE CLIENTES =====
+            case 'portal':
+                require_once __DIR__ . '/controllers/ClienteAuthController.php';
+                require_once __DIR__ . '/controllers/PortalController.php';
+                
+                // Manejar subacciones del portal
+                $subaction = $_GET['subaction'] ?? 'index';
+                $controller = new PortalController();
+                
+                // Acciones que NO requieren login
+                $accionesPublicas = ['index', 'carrito'];
+                
+                // Si la acción requiere login y no está logueado, redirigir
+                if (!in_array($subaction, $accionesPublicas) && !ClienteAuthController::isClienteLoggedIn()) {
+                    $_SESSION['mensaje_info'] = 'Por favor inicia sesión para continuar';
+                    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+                    redirect('index.php?controller=ClienteAuth&action=mostrarLogin');
                 } else {
-                    redirect('login');
+                    switch ($subaction) {
+                        case 'mis-pedidos':
+                            $controller->misPedidos();
+                            break;
+                        case 'ver-pedido':
+                            $controller->verPedido();
+                            break;
+                        case 'perfil':
+                            $controller->perfil();
+                            break;
+                        case 'actualizar-perfil':
+                            $controller->actualizarPerfil();
+                            break;
+                        case 'agregar-direccion':
+                            $controller->agregarDireccion();
+                            break;
+                        case 'carrito':
+                            $controller->verCarrito();
+                            break;
+                        default:
+                            $controller->index();
+                    }
                 }
                 break;
         }

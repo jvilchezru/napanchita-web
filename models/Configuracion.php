@@ -109,4 +109,14 @@ class Configuracion
         
         return $stmt->execute();
     }
+
+    /**
+     * Alias de obtenerPorClave - Para compatibilidad
+     * @param string $clave
+     * @return string|null
+     */
+    public function obtener($clave)
+    {
+        return $this->obtenerPorClave($clave);
+    }
 }
